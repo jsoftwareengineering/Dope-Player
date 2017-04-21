@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Dope Player</string>
+    <string name="title_activity_song_list">SongList</string>
 </resources>
