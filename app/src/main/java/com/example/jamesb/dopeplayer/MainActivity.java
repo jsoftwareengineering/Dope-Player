@@ -9,6 +9,7 @@ import android.widget.Button;
 public class MainActivity extends AppCompatActivity {
 
     Button button;
+    Button buttonSpot;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +22,16 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // TODO Auto-generated method stub
                 Intent i = new Intent(getApplicationContext(),SongList.class);
+                startActivity(i);
+            }
+        });
+
+        buttonSpot=(Button)findViewById(R.id.buttonSpot);
+        buttonSpot.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getApplicationContext(),SpotifyConnect.class);
                 startActivity(i);
             }
         });

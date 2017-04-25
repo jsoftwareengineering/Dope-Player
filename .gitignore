@@ -9,3 +9,4 @@
 .externalNativeBuild
 /.idea/vcs.xml
 .idea/modules.xml
+app/src/main/java/com/example/jamesb/dopeplayer/SpotifyConstants.java
