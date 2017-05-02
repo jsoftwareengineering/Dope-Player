@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_notifications"
+        android:title="@string/traditional_name"
+        android:icon="@drawable/trad"
+        />
+
+    <item
+        android:id="@+id/menu_search"
+        android:title="@string/playing_name"
+        android:icon="@drawable/ic_radio_white_24dp"
+        />
+
+    <item
+        android:id="@+id/music_queue"
+        android:title="@string/queue_name"
+        android:icon="@drawable/ic_queue_music_white_24dp"
+        />
+
+</menu>
