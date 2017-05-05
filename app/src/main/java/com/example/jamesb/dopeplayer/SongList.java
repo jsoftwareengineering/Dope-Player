@@ -53,20 +53,22 @@ public class SongList extends AppCompatActivity implements Search.View {
         mActionListener.init(token);
 
         // Setup search field
-        final SearchView searchView = (SearchView) findViewById(R.id.search_view);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                mActionListener.search(query);
-                searchView.clearFocus();
-                return true;
-            }
+//        final SearchView searchView = (SearchView) findViewById(R.id.search_view);
+//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String query) {
+//                mActionListener.search(query);
+//                searchView.clearFocus();
+//                return true;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newText) {
+//                return false;
+//            }
+//        });
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
+        mActionListener.getPlaylist();
 
 
         // Setup search results list

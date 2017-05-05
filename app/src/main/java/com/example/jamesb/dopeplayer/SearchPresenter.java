@@ -63,6 +63,22 @@ public class SearchPresenter implements Search.ActionListener {
 
 
     @Override
+    public void getPlaylist() {
+        mSearchListener = new SearchPager.CompleteListener() {
+            @Override
+            public void onComplete(List<Track> items) {
+                mView.addData(items);
+            }
+
+            @Override
+            public void onError(Throwable error) {
+                logError(error.getMessage());
+            }
+        };
+        mSearchPager.getFirstPage("", PAGE_SIZE, mSearchListener);
+
+    }
+    @Override
     public void search(@Nullable String searchQuery) {
         if (searchQuery != null && !searchQuery.isEmpty() && !searchQuery.equals(mCurrentQuery)) {
             logMessage("query text submit " + searchQuery);

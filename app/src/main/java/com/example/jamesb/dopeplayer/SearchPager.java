@@ -65,7 +65,10 @@ public class SearchPager {
             @Override
             public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
               List<Track> tracks = new ArrayList<Track>();
-                tracks.add(playlistTrackPager.items.get(0).track);
+                for (PlaylistTrack playlistTrack : playlistTrackPager.items) {
+                    tracks.add(playlistTrack.track);
+                }
+                //tracks.add(playlistTrackPager.items.get(0).track);
                 listener.onComplete(tracks);
             }
         });
