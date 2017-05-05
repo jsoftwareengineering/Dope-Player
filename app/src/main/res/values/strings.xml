@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Dope Player</string>
     <string name="title_activity_song_list">SongList</string>
+    <string name="traditional_name">traditional</string>
+    <string name="playing_name">playing</string>
+    <string name="queue_name">queue</string>
 </resources>
