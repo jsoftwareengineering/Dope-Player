@@ -20,8 +20,6 @@ import com.spotify.sdk.android.player.PlayerEvent;
 import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.player.SpotifyPlayer;
 
-
-
 public class SpotifyConnect extends AppCompatActivity implements
         SpotifyPlayer.NotificationCallback, ConnectionStateCallback
 {
@@ -30,6 +28,7 @@ public class SpotifyConnect extends AppCompatActivity implements
     private Button playTestButton;
     private Button logoutTestButton;
     private Player mPlayer;
+    private RecordSlider slider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +58,25 @@ public class SpotifyConnect extends AppCompatActivity implements
             @Override
             public void onClick(View v) {
 
+            }
+        });
+
+        slider = (RecordSlider) findViewById(R.id.slider);
+        slider.setOnSliderMovedListener(new RecordSlider.OnSliderMovedListener() {
+            @Override
+            public void onSliderMoved(double pos) {
+                Log.d("test", "slider position: " + pos);
+                mPlayer.seekToPosition(new Player.OperationCallback() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onError(Error error) {
+
+                    }
+                }, 400);
             }
         });
     }
