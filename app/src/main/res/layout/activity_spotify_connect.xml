@@ -26,17 +26,28 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent" />
 
-    <com.example.jamesb.dopeplayer.RecordSlider
-        android:id="@+id/slider"
+    <RelativeLayout
         android:layout_width="368dp"
         android:layout_height="0dp"
-        android:padding="30dp"
-        circular:angle="3.14"
-        circular:border_color="#505090"
-        circular:border_gradient_colors="#f05151;#4a90e2;#4a90e2"
-        circular:border_thickness="14dp"
-        circular:thumb_color="#30AEFF"
-        circular:thumb_size="24dp"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp" />
+        tools:layout_editor_absoluteY="8dp"
+        tools:layout_editor_absoluteX="8dp">
+
+        <ImageView
+            android:id="@+id/gifImageViewRecord"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/record_control" />
+
+        <com.example.jamesb.dopeplayer.RecordSlider
+            android:id="@+id/slider"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="30dp"
+            circular:angle="3.14"
+            circular:border_color="#FF3E79"
+            circular:border_thickness="14dp"
+            circular:thumb_color="#FF3E79"
+            circular:thumb_size="1dp" />
+    </RelativeLayout>
+
 </android.support.constraint.ConstraintLayout>

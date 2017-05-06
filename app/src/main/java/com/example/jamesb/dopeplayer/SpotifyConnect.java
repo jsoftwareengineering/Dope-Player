@@ -1,13 +1,16 @@
 package com.example.jamesb.dopeplayer;
 
+import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
@@ -20,6 +23,11 @@ import com.spotify.sdk.android.player.PlayerEvent;
 import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.player.SpotifyPlayer;
 
+import java.io.IOException;
+
+import pl.droidsonroids.gif.GifDrawable;
+import pl.droidsonroids.gif.GifImageView;
+
 public class SpotifyConnect extends AppCompatActivity implements
         SpotifyPlayer.NotificationCallback, ConnectionStateCallback
 {
@@ -29,6 +37,8 @@ public class SpotifyConnect extends AppCompatActivity implements
     private Button logoutTestButton;
     private Player mPlayer;
     private RecordSlider slider;
+    private ImageView recordImage;
+    private GifDrawable recordGif;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +54,32 @@ public class SpotifyConnect extends AppCompatActivity implements
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
 
         playTestButton=(Button)findViewById(R.id.buttonPlayTest);
+        slider = (RecordSlider) findViewById(R.id.slider);
+        playTestButton=(Button)findViewById(R.id.buttonLogoutTest);
+        recordImage = (ImageView) findViewById(R.id.gifImageViewRecord);
+
+
+        try {
+            recordGif = new GifDrawable(getResources(), R.raw.record_control_gif);
+            recordGif.setSpeed(2);
+            recordImage.setImageDrawable(recordGif);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        recordImage.setDrawingCacheEnabled(true);
+
+
+
+
+        recordImage.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                Bitmap bmp = Bitmap.createBitmap(recordImage.getDrawingCache());
+                slider.onTouchEventCustom(motionEvent, bmp);
+                return false;
+            }
+        });
         playTestButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -52,7 +88,7 @@ public class SpotifyConnect extends AppCompatActivity implements
             }
         });
 
-        playTestButton=(Button)findViewById(R.id.buttonLogoutTest);
+
         playTestButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -61,7 +97,9 @@ public class SpotifyConnect extends AppCompatActivity implements
             }
         });
 
-        slider = (RecordSlider) findViewById(R.id.slider);
+
+
+
         slider.setOnSliderMovedListener(new RecordSlider.OnSliderMovedListener() {
             @Override
             public void onSliderMoved(double pos) {

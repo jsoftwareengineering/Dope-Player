@@ -5,6 +5,7 @@ package com.example.jamesb.dopeplayer;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -16,6 +17,8 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.Arrays;
+
+import pl.droidsonroids.gif.GifImageView;
 
 public class RecordSlider extends View {
 
@@ -55,6 +58,8 @@ public class RecordSlider extends View {
     private Paint mPaint = new Paint();
     private SweepGradient mGradientShader;
     private OnSliderMovedListener mListener;
+
+    private GifImageView mRecordImage;
 
     public RecordSlider(Context context) {
         this(context, null);
@@ -220,7 +225,7 @@ public class RecordSlider extends View {
     }
 
     /**
-     * Invoked when slider starts moving or is currently moving. This method calculates and sets position and angle of the thumb.
+     * Invoked when slider starts moving or is currently moving. This method calculates and ets position and angle of the thumb.
      *
      * @param touchX Where is the touch identifier now on X axis
      * @param touchY Where is the touch identifier now on Y axis
@@ -265,15 +270,16 @@ public class RecordSlider extends View {
         mListener = listener;
     }
 
-    @Override
     @SuppressWarnings("NullableProblems")
-    public boolean onTouchEvent(MotionEvent ev) {
+    public boolean onTouchEventCustom(MotionEvent ev, Bitmap bmp) {
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN: {
                 // start moving the thumb (this is the first touch)
                 int x = (int) ev.getX();
                 int y = (int) ev.getY();
-                if (x < mThumbX + mThumbSize && x > mThumbX - mThumbSize && y < mThumbY + mThumbSize && y > mThumbY - mThumbSize) {
+
+                int color = bmp.getPixel((int) ev.getX(), (int) ev.getY());
+                if(color != Color.TRANSPARENT) {
                     getParent().requestDisallowInterceptTouchEvent(true);
                     mIsThumbSelected = true;
                     updateSliderState(x, y);
