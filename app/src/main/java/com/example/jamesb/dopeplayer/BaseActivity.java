@@ -52,10 +52,8 @@ public abstract class BaseActivity extends AppCompatActivity implements BottomNa
 
             if (itemId == R.id.menu_traditional) {
                 startActivity(new Intent(this, TraditionalActivity.class));
-                Log.d("WADDUP", "SELECTED TRADITIONAL ACTIVITY");
             } else if (itemId == R.id.menu_playing) {
                 startActivity(new Intent(this, MainActivity.class));
-                Log.d("WADDUP", "SELECTED PLAYING ACTIVITY");
             }
             //else if (itemId == R.id.menu_queue) {
             //startActivity(new Intent(this, NotificationsActivity.class));
