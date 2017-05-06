@@ -67,6 +67,7 @@ public class SearchPresenter implements Search.ActionListener {
         mSearchListener = new SearchPager.CompleteListener() {
             @Override
             public void onComplete(List<Track> items) {
+
                 mView.addData(items);
             }
 

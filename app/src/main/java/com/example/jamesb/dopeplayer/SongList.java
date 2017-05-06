@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.SearchView;
 
@@ -75,6 +76,7 @@ public class SongList extends AppCompatActivity implements Search.View {
         mAdapter = new SearchResultsAdapter(this, new SearchResultsAdapter.ItemSelectedListener() {
             @Override
             public void onItemSelected(View itemView, Track item) {
+                Log.d("Song", item.toString());
                 mActionListener.selectTrack(item);
             }
         });

@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -20,8 +22,13 @@ import com.spotify.sdk.android.player.PlayerEvent;
 import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.player.SpotifyPlayer;
 
+import java.util.List;
+
+import kaaes.spotify.webapi.android.SpotifyService;
+import kaaes.spotify.webapi.android.models.Track;
+
 public class SpotifyConnect extends AppCompatActivity implements
-        SpotifyPlayer.NotificationCallback, ConnectionStateCallback
+        SpotifyPlayer.NotificationCallback, ConnectionStateCallback, Search.View
 {
     private static final int REQUEST_CODE = 1337;
 
@@ -30,10 +37,28 @@ public class SpotifyConnect extends AppCompatActivity implements
     private Player mPlayer;
     private RecordSlider slider;
 
+    private Search.ActionListener mActionListener;
+
+    private LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
+    private SpotifyConnect.ScrollListener mScrollListener = new SpotifyConnect.ScrollListener(mLayoutManager);
+    private SearchResultsAdapter mAdapter;
+
+    private class ScrollListener extends ResultListScrollListener {
+
+        public ScrollListener(LinearLayoutManager layoutManager) {
+            super(layoutManager);
+        }
+
+        @Override
+        public void onLoadMore() {
+            mActionListener.loadMoreResults();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_spotify_connect);
+        setContentView(R.layout.activity_song_list);
 
         AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(SpotifyConstants.cID,
                 AuthenticationResponse.Type.TOKEN,
@@ -43,42 +68,42 @@ public class SpotifyConnect extends AppCompatActivity implements
 
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
 
-        playTestButton=(Button)findViewById(R.id.buttonPlayTest);
-        playTestButton.setOnClickListener(new View.OnClickListener() {
+//        playTestButton=(Button)findViewById(R.id.buttonPlayTest);
+//        playTestButton.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                mPlayer.playUri(null, "spotify:track:2TpxZ7JUBn3uw46aR7qd6V", 0, 0);
+//            }
+//        });
+//
+//        playTestButton=(Button)findViewById(R.id.buttonLogoutTest);
+//        playTestButton.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//
+//            }
+//        });
 
-            @Override
-            public void onClick(View v) {
-                mPlayer.playUri(null, "spotify:track:2TpxZ7JUBn3uw46aR7qd6V", 0, 0);
-            }
-        });
-
-        playTestButton=(Button)findViewById(R.id.buttonLogoutTest);
-        playTestButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
-        slider = (RecordSlider) findViewById(R.id.slider);
-        slider.setOnSliderMovedListener(new RecordSlider.OnSliderMovedListener() {
-            @Override
-            public void onSliderMoved(double pos) {
-                Log.d("test", "slider position: " + pos);
-                mPlayer.seekToPosition(new Player.OperationCallback() {
-                    @Override
-                    public void onSuccess() {
-
-                    }
-
-                    @Override
-                    public void onError(Error error) {
-
-                    }
-                }, 400);
-            }
-        });
+//        slider = (RecordSlider) findViewById(R.id.slider);
+//        slider.setOnSliderMovedListener(new RecordSlider.OnSliderMovedListener() {
+//            @Override
+//            public void onSliderMoved(double pos) {
+//                Log.d("test", "slider position: " + pos);
+//                mPlayer.seekToPosition(new Player.OperationCallback() {
+//                    @Override
+//                    public void onSuccess() {
+//
+//                    }
+//
+//                    @Override
+//                    public void onError(Error error) {
+//
+//                    }
+//                }, 400);
+//            }
+//        });
     }
 
     @Override
@@ -88,7 +113,27 @@ public class SpotifyConnect extends AppCompatActivity implements
         // Check if result comes from the correct activity
         if (requestCode == REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
+
             if (response.getType() == AuthenticationResponse.Type.TOKEN) {
+                mActionListener = new SearchPresenter(this, this);
+                mActionListener.init( response.getAccessToken());
+                mActionListener.getPlaylist();
+
+                // Setup search results list
+                mAdapter = new SearchResultsAdapter(this, new SearchResultsAdapter.ItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(View itemView, Track item) {
+                        mActionListener.selectTrack(item);
+                        mPlayer.playUri(null, item.uri, 0, 0);
+                    }
+                });
+
+                RecyclerView resultsList = (RecyclerView) findViewById(R.id.search_results);
+                resultsList.setHasFixedSize(true);
+                resultsList.setLayoutManager(mLayoutManager);
+                resultsList.setAdapter(mAdapter);
+                resultsList.addOnScrollListener(mScrollListener);
+
                 Config playerConfig = new Config(this, response.getAccessToken(), SpotifyConstants.cID);
                 Spotify.getPlayer(playerConfig, this, new SpotifyPlayer.InitializationObserver() {
                     @Override
@@ -103,6 +148,8 @@ public class SpotifyConnect extends AppCompatActivity implements
                         Log.e("MainActivity", "Could not initialize player: " + throwable.getMessage());
                     }
                 });
+
+
             }
         }
     }
@@ -160,5 +207,15 @@ public class SpotifyConnect extends AppCompatActivity implements
     @Override
     public void onConnectionMessage(String message) {
         Log.d("MainActivity", "Received connection message: " + message);
+    }
+
+    @Override
+    public void reset() {
+
+    }
+
+    @Override
+    public void addData(List<Track> items) {
+        mAdapter.addData(items);
     }
 }
