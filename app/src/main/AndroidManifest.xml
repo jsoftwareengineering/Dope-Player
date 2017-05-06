@@ -22,6 +22,7 @@
             android:label="@string/title_activity_song_list"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".SpotifyConnect" />
+        <activity android:name=".PlaylistLauncher" />
         <activity
             android:name="com.spotify.sdk.android.authentication.LoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
