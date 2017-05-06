@@ -21,27 +21,29 @@
         android:gravity="center">
 
         <ImageButton
-            android:id="@+id/imageButton7"
+            android:id="@+id/button_previous"
+            android:background="@null"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            design:srcCompat="@drawable/ic_skip_previous_black_24dp" />
+            design:srcCompat="@drawable/ic_skip_previous_black_48dp" />
 
         <ImageButton
-            android:id="@+id/imageButton5"
+            android:id="@+id/button_play"
+            android:background="@null"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            design:srcCompat="@drawable/ic_play_arrow_black_24dp" />
+            design:srcCompat="@drawable/ic_play_arrow_black_48dp" />
 
         <ImageButton
-            android:id="@+id/imageButton6"
+            android:id="@+id/button_next"
+            android:background="@null"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            design:srcCompat="@drawable/ic_skip_next_black_24dp" />
+            design:srcCompat="@drawable/ic_skip_next_black_48dp" />
     </LinearLayout>
-
 
 
 
