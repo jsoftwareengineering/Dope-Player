@@ -3,19 +3,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/menu_notifications"
+        android:id="@+id/menu_traditional"
         android:title="@string/traditional_name"
-        android:icon="@drawable/trad"
+        android:icon="@drawable/ic_traditional"
         />
 
     <item
-        android:id="@+id/menu_search"
+        android:id="@+id/menu_playing"
         android:title="@string/playing_name"
         android:icon="@drawable/ic_radio_white_24dp"
         />
 
     <item
-        android:id="@+id/music_queue"
+        android:id="@+id/menu_queue"
         android:title="@string/queue_name"
         android:icon="@drawable/ic_queue_music_white_24dp"
         />

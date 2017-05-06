@@ -6,8 +6,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity{
 
+    /*
     Button button;
     Button buttonSpot;
 
@@ -36,6 +37,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    */
 
+    @Override
+    int getContentViewId() {
+        return R.layout.activity_main;
+    }
+
+    @Override
+    int getNavigationMenuItemId() {
+        return R.id.menu_playing;
+    }
 
 }
