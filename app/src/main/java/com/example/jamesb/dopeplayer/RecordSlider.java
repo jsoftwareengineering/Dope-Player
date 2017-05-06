@@ -13,6 +13,7 @@ import android.graphics.SweepGradient;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -58,8 +59,6 @@ public class RecordSlider extends View {
     private Paint mPaint = new Paint();
     private SweepGradient mGradientShader;
     private OnSliderMovedListener mListener;
-
-    private GifImageView mRecordImage;
 
     public RecordSlider(Context context) {
         this(context, null);
@@ -117,6 +116,14 @@ public class RecordSlider extends View {
         setPadding(padding);
 
         a.recycle();
+    }
+
+    public double getAngle() {
+        return mAngle;
+    }
+
+    public double getmStartAngle() {
+        return mStartAngle;
     }
 
     /* ***** Setters ***** */
@@ -231,6 +238,7 @@ public class RecordSlider extends View {
      * @param touchY Where is the touch identifier now on Y axis
      */
     private void updateSliderState(int touchX, int touchY) {
+        Log.d("test", "x: " + touchX + " y: " + touchY);
         int distanceX = touchX - mCircleCenterX;
         int distanceY = mCircleCenterY - touchY;
         //noinspection SuspiciousNameCombination
@@ -243,6 +251,7 @@ public class RecordSlider extends View {
         if (mListener != null) {
             // notify slider moved listener of the new position which should be in [0..1] range
             mListener.onSliderMoved((mAngle - mStartAngle) / (2 * Math.PI));
+            //mListener.onSliderMoved(mStartAngle + pos * 2 * Math.PI);
         }
     }
 
@@ -271,15 +280,15 @@ public class RecordSlider extends View {
     }
 
     @SuppressWarnings("NullableProblems")
-    public boolean onTouchEventCustom(MotionEvent ev, Bitmap bmp) {
+    public boolean onTouchEventCustom(MotionEvent ev, Boolean correctStart) {
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN: {
                 // start moving the thumb (this is the first touch)
                 int x = (int) ev.getX();
                 int y = (int) ev.getY();
 
-                int color = bmp.getPixel((int) ev.getX(), (int) ev.getY());
-                if(color != Color.TRANSPARENT) {
+
+                if(correctStart) {
                     getParent().requestDisallowInterceptTouchEvent(true);
                     mIsThumbSelected = true;
                     updateSliderState(x, y);
@@ -307,7 +316,7 @@ public class RecordSlider extends View {
 
         // redraw the whole component
         invalidate();
-        return true;
+        return mIsThumbSelected;
     }
 
 }

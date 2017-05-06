@@ -1,14 +1,16 @@
 package com.example.jamesb.dopeplayer;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 
@@ -26,7 +28,6 @@ import com.spotify.sdk.android.player.SpotifyPlayer;
 import java.io.IOException;
 
 import pl.droidsonroids.gif.GifDrawable;
-import pl.droidsonroids.gif.GifImageView;
 
 public class SpotifyConnect extends AppCompatActivity implements
         SpotifyPlayer.NotificationCallback, ConnectionStateCallback
@@ -37,8 +38,12 @@ public class SpotifyConnect extends AppCompatActivity implements
     private Button logoutTestButton;
     private Player mPlayer;
     private RecordSlider slider;
-    private ImageView recordImage;
+    private ImageView recordImageView;
     private GifDrawable recordGif;
+    private Drawable recordImage;
+    private boolean touchedRecord;
+    private double angle;
+    private double previousAngle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,28 +61,71 @@ public class SpotifyConnect extends AppCompatActivity implements
         playTestButton=(Button)findViewById(R.id.buttonPlayTest);
         slider = (RecordSlider) findViewById(R.id.slider);
         playTestButton=(Button)findViewById(R.id.buttonLogoutTest);
-        recordImage = (ImageView) findViewById(R.id.gifImageViewRecord);
-
+        recordImageView = (ImageView) findViewById(R.id.gifImageViewRecord);
+        touchedRecord = false;
+        recordImage = getDrawable(R.drawable.record_control);
+        angle = 0;
 
         try {
             recordGif = new GifDrawable(getResources(), R.raw.record_control_gif);
             recordGif.setSpeed(2);
-            recordImage.setImageDrawable(recordGif);
+            recordImageView.setImageDrawable(recordGif);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        recordImage.setDrawingCacheEnabled(true);
+        recordImageView.setDrawingCacheEnabled(true);
 
 
 
 
-        recordImage.setOnTouchListener(new View.OnTouchListener() {
+        recordImageView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                Bitmap bmp = Bitmap.createBitmap(recordImage.getDrawingCache());
-                slider.onTouchEventCustom(motionEvent, bmp);
-                return false;
+
+
+
+                switch (motionEvent.getAction()) {
+
+                    case MotionEvent.ACTION_DOWN: {
+                        Bitmap bmp = Bitmap.createBitmap(recordImageView.getDrawingCache());
+                        int color = bmp.getPixel((int) motionEvent.getX(), (int) motionEvent.getY());
+                        touchedRecord = (color != Color.TRANSPARENT);
+                        if(touchedRecord) {
+                            recordImageView.setImageDrawable(recordImage);
+                            slider.onTouchEventCustom(motionEvent, touchedRecord);
+                        }
+                    }
+                    case MotionEvent.ACTION_MOVE: {
+                        if(touchedRecord) {
+                            slider.onTouchEventCustom(motionEvent, touchedRecord);
+                        }
+
+                        break;
+                    }
+                    case MotionEvent.ACTION_UP: {
+                        if(touchedRecord) {
+                            mPlayer.seekToPosition(new Player.OperationCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    recordImageView.setImageDrawable(recordGif);
+                                }
+
+                                @Override
+                                public void onError(Error error) {
+
+                                }
+                            }, 400);
+                            touchedRecord = false;
+                        }
+
+                        slider.onTouchEventCustom(motionEvent, touchedRecord);
+                        break;
+                    }
+
+                }
+
+                return true;
             }
         });
         playTestButton.setOnClickListener(new View.OnClickListener() {
@@ -88,33 +136,39 @@ public class SpotifyConnect extends AppCompatActivity implements
             }
         });
 
-
-        playTestButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
-
-
-
         slider.setOnSliderMovedListener(new RecordSlider.OnSliderMovedListener() {
             @Override
             public void onSliderMoved(double pos) {
-                Log.d("test", "slider position: " + pos);
-                mPlayer.seekToPosition(new Player.OperationCallback() {
-                    @Override
-                    public void onSuccess() {
+                previousAngle = angle;
+                angle = slider.getmStartAngle() + pos * 2 * Math.PI;
+                angle = angle + Math.PI;
+                angle = angle * 180 / Math.PI;
+                angle = 360 - angle;
+                Log.d("test", "slider position: " + angle);
+                Log.d("test", "slider start position: " + slider.getmStartAngle());
+                Log.d("test", "pos: " + pos);
 
-                    }
+                double mangle = angle;
 
-                    @Override
-                    public void onError(Error error) {
+//                Matrix matrix = new Matrix();
+//                recordImageView.setScaleType(ImageView.ScaleType.MATRIX);   //required
+//
+//                float x = recordImageView.getPivotX() + recordImageView.getWidth()/ 2;
+//                float y = recordImageView.getPivotY() + recordImageView.getHeight()/ 2;
+//                matrix.postRotate((float) angle, x, y);
+//                recordImageView.setImageMatrix(matrix);
+//                recordImageView.getLayoutParams().height = 100;//LinearLayout.LayoutParams.MATCH_PARENT;
+//                recordImageView.getLayoutParams().width = 100;//LinearLayout.LayoutParams.MATCH_PARENT;
+                Animation a = new RotateAnimation( (float)previousAngle, (float)angle,
+                        Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+                        0.5f);
+                a.setRepeatCount(-1);
+                a.setDuration(10);
+                //RotateAnimation rotate = new RotateAnimation((int) previousAngle ,(int) angle);
+                //rotate.setDuration(0);
+                recordImageView.startAnimation(a);
+                //recordImageView.setRotation((float) angle);
 
-                    }
-                }, 400);
             }
         });
     }

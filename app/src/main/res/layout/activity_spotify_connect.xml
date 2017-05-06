@@ -44,10 +44,11 @@
             android:layout_height="match_parent"
             android:padding="30dp"
             circular:angle="3.14"
+            circular:start_angle="3.14"
             circular:border_color="#FF3E79"
             circular:border_thickness="14dp"
             circular:thumb_color="#FF3E79"
-            circular:thumb_size="1dp" />
+            circular:thumb_size="60dp" />
     </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>
