@@ -20,6 +20,8 @@ public class Search {
 
         void search(String searchQuery);
 
+        void getPlaylist();
+
         void loadMoreResults();
 
         void selectTrack(Track item);

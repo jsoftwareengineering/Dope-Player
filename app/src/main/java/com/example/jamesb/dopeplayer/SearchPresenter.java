@@ -51,6 +51,9 @@ public class SearchPresenter implements Search.ActionListener {
         if (accessToken != null) {
             spotifyApi.setAccessToken(accessToken);
         } else {
+            accessToken = "BQCZiiM153-FRxQrcqjBMRteB9-7oVWJL_Lpcvljl3Y2Fsl5gZ0pt0R66ndsAah6FMhVu9aP7rcVXWw50SXN8TK-78dfbGFcsV9155tAkNdRAEl7CwLDrb1_EpoN-27YipEsLBmfANsplYc8Y7OHgEpfZLww";
+            spotifyApi.setAccessToken(accessToken);
+
             logError("No valid access token");
         }
 
@@ -59,6 +62,23 @@ public class SearchPresenter implements Search.ActionListener {
     }
 
 
+    @Override
+    public void getPlaylist() {
+        mSearchListener = new SearchPager.CompleteListener() {
+            @Override
+            public void onComplete(List<Track> items) {
+
+                mView.addData(items);
+            }
+
+            @Override
+            public void onError(Throwable error) {
+                logError(error.getMessage());
+            }
+        };
+        mSearchPager.getFirstPage("", PAGE_SIZE, mSearchListener);
+
+    }
     @Override
     public void search(@Nullable String searchQuery) {
         if (searchQuery != null && !searchQuery.isEmpty() && !searchQuery.equals(mCurrentQuery)) {

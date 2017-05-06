@@ -9,7 +9,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme.NoActionBar">
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,10 +21,12 @@
             android:name=".SongList"
             android:label="@string/title_activity_song_list"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".SpotifyConnect"></activity>
+        <activity android:name=".SpotifyConnect" />
+        <activity android:name=".PlaylistLauncher" />
         <activity
             android:name="com.spotify.sdk.android.authentication.LoginActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity android:name=".TraditionalActivity"></activity>
     </application>
 
 </manifest>

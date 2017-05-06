@@ -11,12 +11,12 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".SongList">
 
-    <SearchView
-        android:id="@+id/search_view"
+
+    <TextView
+        android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:iconifiedByDefault="false"
-        android:queryHint="Search Tracks"/>
+        android:text="Dope.3" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/search_results"
