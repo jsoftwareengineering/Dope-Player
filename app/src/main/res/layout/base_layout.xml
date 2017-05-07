@@ -68,5 +68,24 @@
         android:background="@color/primaryPink"
         design:menu="@menu/bottom_nav" />
 
+    <TextView
+        android:id="@+id/textViewArtist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/toolbar2"
+        android:layout_marginStart="24dp"
+        android:text="@string/artist"
+        android:textColor="@color/lightText" />
+
+    <TextView
+        android:id="@+id/textViewSong"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/textViewArtist"
+        android:layout_below="@+id/textViewArtist"
+        android:text="@string/song"
+        android:textColor="@color/lightText" />
+
 
 </RelativeLayout>

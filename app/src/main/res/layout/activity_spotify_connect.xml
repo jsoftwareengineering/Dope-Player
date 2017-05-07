@@ -48,7 +48,16 @@
             circular:border_color="#FF3E79"
             circular:border_thickness="14dp"
             circular:thumb_color="#FF3E79"
-            circular:thumb_size="60dp" />
+            circular:thumb_size="1dp" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="21dp" />
     </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

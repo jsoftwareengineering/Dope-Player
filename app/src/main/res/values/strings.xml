@@ -4,4 +4,6 @@
     <string name="traditional_name">traditional</string>
     <string name="playing_name">playing</string>
     <string name="queue_name">queue</string>
+    <string name="artist">Artist  /</string>
+    <string name="song">Song  /</string>
 </resources>

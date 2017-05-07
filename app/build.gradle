@@ -51,6 +51,7 @@ dependencies {
     compile 'com.spotify.sdk:spotify-android-auth-1.0.0@aar'
     compile 'com.spotify.sdk:spotify-player-24-noconnect-2.20b@aar'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.2.7'
+    compile 'com.android.support:percent:23.0.0'
 
     testCompile 'junit:junit:4.12'
 }

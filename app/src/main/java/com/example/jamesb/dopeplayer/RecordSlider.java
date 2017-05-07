@@ -238,7 +238,7 @@ public class RecordSlider extends View {
      * @param touchY Where is the touch identifier now on Y axis
      */
     private void updateSliderState(int touchX, int touchY) {
-        Log.d("test", "x: " + touchX + " y: " + touchY);
+        //Log.d("test", "x: " + touchX + " y: " + touchY);
         int distanceX = touchX - mCircleCenterX;
         int distanceY = mCircleCenterY - touchY;
         //noinspection SuspiciousNameCombination

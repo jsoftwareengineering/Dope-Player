@@ -35,7 +35,6 @@ public class SpotifyConnect extends AppCompatActivity implements
     private static final int REQUEST_CODE = 1337;
 
     private Button playTestButton;
-    private Button logoutTestButton;
     private Player mPlayer;
     private RecordSlider slider;
     private ImageView recordImageView;
@@ -44,6 +43,7 @@ public class SpotifyConnect extends AppCompatActivity implements
     private boolean touchedRecord;
     private double angle;
     private double previousAngle;
+    private double degreesMovedSincePress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,18 +93,30 @@ public class SpotifyConnect extends AppCompatActivity implements
                         touchedRecord = (color != Color.TRANSPARENT);
                         if(touchedRecord) {
                             recordImageView.setImageDrawable(recordImage);
+                            degreesMovedSincePress = 0;
                             slider.onTouchEventCustom(motionEvent, touchedRecord);
                         }
                     }
                     case MotionEvent.ACTION_MOVE: {
                         if(touchedRecord) {
                             slider.onTouchEventCustom(motionEvent, touchedRecord);
+
+                            //first two ifs account for when the slider goes from 360 to 1 or otherwise
+                            if(angle > 340 && previousAngle < 20) {
+                                degreesMovedSincePress += (360 - angle) - previousAngle;
+                            } else if(previousAngle > 340 && angle < 20) {
+                                degreesMovedSincePress += angle - (360 - previousAngle);
+                            } else {
+                                degreesMovedSincePress += angle - previousAngle ;
+                            }
+                            Log.d("degrees", degreesMovedSincePress + "");
                         }
 
                         break;
                     }
                     case MotionEvent.ACTION_UP: {
                         if(touchedRecord) {
+                            long position = mPlayer.getPlaybackState().positionMs;
                             mPlayer.seekToPosition(new Player.OperationCallback() {
                                 @Override
                                 public void onSuccess() {
@@ -115,7 +127,7 @@ public class SpotifyConnect extends AppCompatActivity implements
                                 public void onError(Error error) {
 
                                 }
-                            }, 400);
+                            }, (int) (position + degreesMovedSincePress / .018));
                             touchedRecord = false;
                         }
 
@@ -145,20 +157,10 @@ public class SpotifyConnect extends AppCompatActivity implements
                 angle = angle * 180 / Math.PI;
                 angle = 360 - angle;
                 Log.d("test", "slider position: " + angle);
-                Log.d("test", "slider start position: " + slider.getmStartAngle());
-                Log.d("test", "pos: " + pos);
+                //Log.d("test", "slider start position: " + slider.getmStartAngle());
+                //Log.d("test", "pos: " + pos);
 
-                double mangle = angle;
 
-//                Matrix matrix = new Matrix();
-//                recordImageView.setScaleType(ImageView.ScaleType.MATRIX);   //required
-//
-//                float x = recordImageView.getPivotX() + recordImageView.getWidth()/ 2;
-//                float y = recordImageView.getPivotY() + recordImageView.getHeight()/ 2;
-//                matrix.postRotate((float) angle, x, y);
-//                recordImageView.setImageMatrix(matrix);
-//                recordImageView.getLayoutParams().height = 100;//LinearLayout.LayoutParams.MATCH_PARENT;
-//                recordImageView.getLayoutParams().width = 100;//LinearLayout.LayoutParams.MATCH_PARENT;
                 Animation a = new RotateAnimation( (float)previousAngle, (float)angle,
                         Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
                         0.5f);
