@@ -219,7 +219,6 @@ public class MainActivity extends BaseActivity implements
                 Metadata.Track track = mPlayer.getMetadata().currentTrack;
                 String song = track.name;
                 String artist = track.artistName;
-                //TODO replace addition with reference to string resource
                 textViewArtist.setText(getResources().getText(R.string.artist) + "  " + artist);
                 textViewSong.setText(getResources().getText(R.string.song) + "  " + song);
                 recordImageView.setImageDrawable(recordGif);
