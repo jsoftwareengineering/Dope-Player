@@ -27,7 +27,7 @@ import java.util.List;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Track;
 
-public class PlaylistLauncher extends AppCompatActivity implements
+public class PlaylistLauncher extends BaseActivity implements
         SpotifyPlayer.NotificationCallback, ConnectionStateCallback, Search.View
 {
     private static final int REQUEST_CODE = 1337;
@@ -58,7 +58,7 @@ public class PlaylistLauncher extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_song_list);
+      //  setContentView(R.layout.activity_song_list);
 
         AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(SpotifyConstants.cID,
                 AuthenticationResponse.Type.TOKEN,
@@ -156,8 +156,6 @@ public class PlaylistLauncher extends AppCompatActivity implements
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-
         Spotify.destroyPlayer(this);
         super.onDestroy();
     }
@@ -186,7 +184,7 @@ public class PlaylistLauncher extends AppCompatActivity implements
     public void onLoggedIn() {
         Log.d("SpotifyConnect", "User logged in");
 
-        mPlayer.playUri(null, "spotify:track:2TpxZ7JUBn3uw46aR7qd6V", 0, 0);
+//        mPlayer.playUri(null, "spotify:track:2TpxZ7JUBn3uw46aR7qd6V", 0, 0);
     }
 
     @Override
@@ -218,4 +216,15 @@ public class PlaylistLauncher extends AppCompatActivity implements
     public void addData(List<Track> items) {
         mAdapter.addData(items);
     }
+
+    @Override
+    int getContentViewId() {
+        return R.layout.activity_song_list;
+    }
+
+    @Override
+    int getNavigationMenuItemId() {
+        return R.id.menu_queue;
+    }
+
 }

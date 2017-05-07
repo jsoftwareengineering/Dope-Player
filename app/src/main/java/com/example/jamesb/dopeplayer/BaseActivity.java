@@ -55,6 +55,10 @@ public abstract class BaseActivity extends AppCompatActivity implements BottomNa
             } else if (itemId == R.id.menu_playing) {
                 startActivity(new Intent(this, MainActivity.class));
             }
+            else if ((itemId == R.id.menu_queue)) {
+                startActivity(new Intent(this, PlaylistLauncher.class));
+
+            }
             //else if (itemId == R.id.menu_queue) {
             //startActivity(new Intent(this, NotificationsActivity.class));
             //}
