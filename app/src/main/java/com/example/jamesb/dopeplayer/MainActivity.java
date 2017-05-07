@@ -220,8 +220,8 @@ public class MainActivity extends BaseActivity implements
                 String song = track.name;
                 String artist = track.artistName;
                 //TODO replace addition with reference to string resource
-                textViewArtist.setText("Artist  /  " + artist);
-                textViewSong.setText("Song  /  " + song);
+                textViewArtist.setText(getResources().getText(R.string.artist) + "  " + artist);
+                textViewSong.setText(getResources().getText(R.string.song) + "  " + song);
                 recordImageView.setImageDrawable(recordGif);
             }
             default:
