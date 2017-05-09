@@ -25,13 +25,9 @@ public class TraditionalActivity extends BaseActivity implements
     TextView track;
     TextView time;
     TextView title;
-<<<<<<< HEAD
-=======
     TextView artist;
     TextView song;
 
-    //playCheck playUIthread;
->>>>>>> cc96651ad15aa3b41054459755708f9f4f53a8f8
     boolean currentlyListening;
 
     //define text color
@@ -53,6 +49,12 @@ public class TraditionalActivity extends BaseActivity implements
 
         BaseActivity.mPlayer.addNotificationCallback(TraditionalActivity.this);
 
+        currentlyListening = BaseActivity.mPlayer.getPlaybackState().isPlaying;
+        if (currentlyListening) {
+            setPlayButton(true);
+        } else {
+            setPlayButton(false);
+        }
 
         //set play button listener
         playButton.setOnClickListener(new View.OnClickListener() {
@@ -89,33 +91,6 @@ public class TraditionalActivity extends BaseActivity implements
     }
 
     @Override
-    public void onPlaybackEvent(PlayerEvent playerEvent) {
-        Log.d("MainActivity", "Playback event received: " + playerEvent.name());
-        switch (playerEvent) {
-            // Handle event type as necessary
-            case kSpPlaybackNotifyPause: {
-                Log.d("playback", "button method called");
-                setPlayButton(true);
-            }
-            case kSpPlaybackNotifyPlay: {
-                setPlayButton(false);
-            }
-            default:
-                break;
-        }
-    }
-
-    @Override
-    public void onPlaybackError(Error error) {
-        Log.d("MainActivity", "Playback error received: " + error.name());
-        switch (error) {
-            // Handle error type as necessary
-            default:
-                break;
-        }
-    }
-
-    @Override
     int getContentViewId() {
         return R.layout.activity_traditional;
     }
@@ -127,28 +102,24 @@ public class TraditionalActivity extends BaseActivity implements
 
     //set play/pause button icon depending on playback state
     private void setPlayButton(boolean command){
-
-        //if currently playing, change playButton to pause icon
-        if(command){
-            //set button image to pause
-            Log.d("control", "play button set to pause");
+        if(command) {
+            Log.d("control", "setPlayButton—play button set to pause");
             playButton.setImageResource(R.drawable.ic_pause_black_48dp);
-        } else{
-            Log.d("control", "play button set to play");
+        } else {
+            Log.d("control", "setPlayButton-play button set to play");
             playButton.setImageResource(R.drawable.ic_play_arrow_black_48dp);
         }
-
     }
     private void pausePlayback(){
         BaseActivity.mPlayer.pause(new Player.OperationCallback() {
             @Override
             public void onSuccess() {
-                Log.d("Playback", "pause message sent to Spotify player");
+                setPlayButton(false);
             }
 
             @Override
             public void onError(Error error) {
-                Log.d("Playback", "Error pausing Spotify player");
+
             }
         });
     }
@@ -156,12 +127,12 @@ public class TraditionalActivity extends BaseActivity implements
         BaseActivity.mPlayer.resume(new Player.OperationCallback() {
             @Override
             public void onSuccess() {
-                Log.d("Playback", "play message sent to Spotify player");
+                setPlayButton(true);
             }
 
             @Override
             public void onError(Error error) {
-                Log.d("Playback", "Error playing Spotify player");
+
             }
         });
     }
@@ -224,8 +195,16 @@ public class TraditionalActivity extends BaseActivity implements
             // Handle event type as necessary
             case kSpPlaybackNotifyMetadataChanged: {
                 setSongAndArtist();
-
             }
+
+            /*
+            case kSpPlaybackNotifyPause: {
+
+                setPlayButton(false);
+            }
+            case kSpPlaybackNotifyPlay: {
+                setPlayButton(true);
+            } */
             default:
                 break;
         }
