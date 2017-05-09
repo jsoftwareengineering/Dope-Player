@@ -1,18 +1,25 @@
 package com.example.jamesb.dopeplayer;
 
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 
 import com.spotify.sdk.android.authentication.AuthenticationClient;
@@ -209,6 +216,7 @@ public class MainActivity extends BaseActivity implements
         super.onDestroy();
     }
 
+
     @Override
     public void onPlaybackEvent(PlayerEvent playerEvent) {
         Log.d("MainActivity", "Playback event received: " + playerEvent.name());
@@ -241,7 +249,7 @@ public class MainActivity extends BaseActivity implements
     public void onLoggedIn() {
         Log.d("SpotifyConnect", "User logged in");
 
-        BaseActivity.mPlayer.playUri(null, "spotify:track:2TpxZ7JUBn3uw46aR7qd6V", 0, 0);
+        BaseActivity.mPlayer.playUri(null, "spotify:user:nneeraj2:playlist:6hal73jyVVzSFblTIWOm1R", 0, 0);
 
     }
 
@@ -275,4 +283,88 @@ public class MainActivity extends BaseActivity implements
         return R.id.menu_playing;
     }
 
+    private void addNotification() {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        PendingIntent pIntent = PendingIntent.getActivity(this, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Intent switchIntent = new Intent(getApplicationContext(), closeButtonListener.class);
+        PendingIntent pendingSwitchIntent = PendingIntent.getBroadcast(this, 0,
+                switchIntent, 0);
+
+        Intent pauseIntent = new Intent(getApplicationContext(), PauseSong.class);
+        PendingIntent pendingPauseIntent = PendingIntent.getBroadcast(this, 0,
+                pauseIntent, 0);
+
+        Intent resumeIntent = new Intent(getApplicationContext(), resumeButtonListener.class);
+        PendingIntent pendingResumeIntent = PendingIntent.getBroadcast(this, 0,
+                resumeIntent, 0);
+
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.record_control)
+                        .setContentTitle("Dope Player")
+                        .setContentText("")
+                        .addAction(R.drawable.ic_play_arrow_black_24dp, "Pause", pendingPauseIntent)
+                        .addAction(R.drawable.ic_pause_black_48dp, "Resume", pendingResumeIntent)
+                        .addAction(R.drawable.ic_pause_black_48dp, "Close", pendingSwitchIntent);
+
+        // Add as notification
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(0, builder.build());
+    }
+    @Override
+    public void onStop() {
+        addNotification();
+        super.onStop();
+
+    }
+
+    public static class closeButtonListener extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+        BaseActivity.mPlayer.destroy();
+
+        }
+    }
+
+    public static class resumeButtonListener extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("Here", "I am here");
+            //BaseActivity.mPlayer.playUri(null, "spotify:track:2TpxZ7JUBn3uw46aR7qd6V", 0, 0);
+            Player.OperationCallback operationCallback = new Player.OperationCallback() {
+                @Override
+                public void onSuccess() {
+
+                }
+
+                @Override
+                public void onError(Error error) {
+
+                }
+            };
+//            BaseActivity.mPlayer.pause(operationCallback);
+            BaseActivity.mPlayer.resume(operationCallback);
+        }
+    }
+
+    public static class PauseSong extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("Here", "I am here");
+            // BaseActivity.mPlayer.playUri(null, "spotify:track:2TpxZ7JUBn3uw46aR7qd6V", 0, 0);
+            Player.OperationCallback operationCallback = new Player.OperationCallback() {
+                @Override
+                public void onSuccess() {
+
+                }
+
+                @Override
+                public void onError(Error error) {
+
+                }
+            };
+            BaseActivity.mPlayer.pause(operationCallback);
+        }
+    }
 }
