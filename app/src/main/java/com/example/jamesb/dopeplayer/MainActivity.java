@@ -107,6 +107,17 @@ public class MainActivity extends BaseActivity implements
                             recordImageView.setImageDrawable(recordImage);
                             degreesMovedSincePress = 0;
                             slider.onTouchEventCustom(motionEvent, touchedRecord);
+                            BaseActivity.mPlayer.pause(new Player.OperationCallback() {
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onError(Error error) {
+
+                                }
+                            });
                         }
                     }
                     case MotionEvent.ACTION_MOVE: {
@@ -136,6 +147,17 @@ public class MainActivity extends BaseActivity implements
                                 public void onSuccess() {
                                     recordImageView.setImageDrawable(recordGif);
                                     recordGif.seekToFrame(0);
+                                    BaseActivity.mPlayer.resume(new Player.OperationCallback() {
+                                        @Override
+                                        public void onSuccess() {
+
+                                        }
+
+                                        @Override
+                                        public void onError(Error error) {
+
+                                        }
+                                    });
                                 }
 
                                 @Override
