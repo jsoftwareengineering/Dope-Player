@@ -323,6 +323,8 @@ public class MainActivity extends BaseActivity implements
         @Override
         public void onReceive(Context context, Intent intent) {
             //BaseActivity.mPlayer.destroy();
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(0);
             Spotify.destroyPlayer(this);
             System.exit(0);
         }
