@@ -8,10 +8,14 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.spotify.sdk.android.player.Error;
+import com.spotify.sdk.android.player.Metadata;
 import com.spotify.sdk.android.player.PlaybackState;
 import com.spotify.sdk.android.player.Player;
+import com.spotify.sdk.android.player.PlayerEvent;
+import com.spotify.sdk.android.player.SpotifyPlayer;
 
-public class TraditionalActivity extends BaseActivity {
+public class TraditionalActivity extends BaseActivity implements
+        SpotifyPlayer.NotificationCallback {
 
     //declare variables
     ImageButton playButton;
@@ -20,6 +24,9 @@ public class TraditionalActivity extends BaseActivity {
     TextView track;
     TextView time;
     TextView title;
+    TextView artist;
+    TextView song;
+
     //playCheck playUIthread;
     boolean currentlyListening;
 
@@ -38,6 +45,7 @@ public class TraditionalActivity extends BaseActivity {
 
         setPlayButton();
         setTraditionalViewSettings();
+        setSongAndArtist();
 
         //playUIthread = new playCheck();
         //playUIthread.start();
@@ -185,8 +193,39 @@ public class TraditionalActivity extends BaseActivity {
         title = (TextView) findViewById(R.id.toolbar_title);
         time = (TextView) findViewById(R.id.text_timecode);
         track = (TextView) findViewById(R.id.text_trackno);
+        artist = (TextView) findViewById(R.id.textViewArtist);
+        song = (TextView) findViewById(R.id.textViewSong);
         title.setTextColor(textColor);
         track.setTextColor(textColor);
         time.setTextColor(textColor);
+        artist.setTextColor(textColor);
+        song.setTextColor(textColor);
+    }
+
+    private void setSongAndArtist(){
+        Metadata.Track track = BaseActivity.mPlayer.getMetadata().currentTrack;
+        String s = track.name;
+        String a = track.artistName;
+        artist.setText(getResources().getText(R.string.artist) + "  " + a);
+        song.setText(getResources().getText(R.string.song) + "  " + s);
+    }
+
+    @Override
+    public void onPlaybackEvent(PlayerEvent playerEvent) {
+        Log.d("TraditionalActivity", "Playback event received: " + playerEvent.name());
+        switch (playerEvent) {
+            // Handle event type as necessary
+            case kSpPlaybackNotifyMetadataChanged: {
+                setSongAndArtist();
+
+            }
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onPlaybackError(Error error) {
+
     }
 }

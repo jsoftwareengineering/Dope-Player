@@ -322,8 +322,9 @@ public class MainActivity extends BaseActivity implements
     public static class closeButtonListener extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-        BaseActivity.mPlayer.destroy();
-
+            //BaseActivity.mPlayer.destroy();
+            Spotify.destroyPlayer(this);
+            System.exit(0);
         }
     }
 
