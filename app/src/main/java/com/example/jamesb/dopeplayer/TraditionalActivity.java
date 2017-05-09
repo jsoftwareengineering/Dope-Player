@@ -47,6 +47,8 @@ public class TraditionalActivity extends BaseActivity implements
         setTraditionalViewSettings();
         setSongAndArtist();
 
+        BaseActivity.mPlayer.addNotificationCallback(TraditionalActivity.this);
+
         //playUIthread = new playCheck();
         //playUIthread.start();
 
