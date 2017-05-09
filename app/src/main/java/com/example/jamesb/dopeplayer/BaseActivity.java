@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.spotify.sdk.android.player.Player;
+
 /*
  * Mike, 05-MAY-2017
  * This base activity provides the navigation functionality that all other activities will inherit.
@@ -17,6 +19,8 @@ import android.view.MenuItem;
 
 public abstract class BaseActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     protected BottomNavigationView navigationView;
+    public static Player mPlayer;
+    public static String token;
 
     //on create, set the view and add listener to bottom navigation bar
     @Override

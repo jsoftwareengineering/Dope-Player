@@ -34,7 +34,6 @@ public class PlaylistLauncher extends BaseActivity implements
 
     private Button playTestButton;
     private Button logoutTestButton;
-    private Player mPlayer;
     private RecordSlider slider;
 
     private Search.ActionListener mActionListener;
@@ -60,50 +59,24 @@ public class PlaylistLauncher extends BaseActivity implements
         super.onCreate(savedInstanceState);
       //  setContentView(R.layout.activity_song_list);
 
-        AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(SpotifyConstants.cID,
-                AuthenticationResponse.Type.TOKEN,
-                SpotifyConstants.cRedirectURI);
-        builder.setScopes(new String[]{"user-read-private", "streaming"});
-        AuthenticationRequest request = builder.build();
+        mActionListener = new SearchPresenter(this, this);
+        mActionListener.init(BaseActivity.token);
+        mActionListener.getPlaylist();
 
-        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
+        // Setup search results list
+        mAdapter = new SearchResultsAdapter(this, new SearchResultsAdapter.ItemSelectedListener() {
+            @Override
+            public void onItemSelected(View itemView, Track item) {
+                mActionListener.selectTrack(item);
+                BaseActivity.mPlayer.playUri(null, item.uri, 0, 0);
+            }
+        });
 
-//        playTestButton=(Button)findViewById(R.id.buttonPlayTest);
-//        playTestButton.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                mPlayer.playUri(null, "spotify:track:2TpxZ7JUBn3uw46aR7qd6V", 0, 0);
-//            }
-//        });
-//
-//        playTestButton=(Button)findViewById(R.id.buttonLogoutTest);
-//        playTestButton.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//
-//            }
-//        });
-
-//        slider = (RecordSlider) findViewById(R.id.slider);
-//        slider.setOnSliderMovedListener(new RecordSlider.OnSliderMovedListener() {
-//            @Override
-//            public void onSliderMoved(double pos) {
-//                Log.d("test", "slider position: " + pos);
-//                mPlayer.seekToPosition(new Player.OperationCallback() {
-//                    @Override
-//                    public void onSuccess() {
-//
-//                    }
-//
-//                    @Override
-//                    public void onError(Error error) {
-//
-//                    }
-//                }, 400);
-//            }
-//        });
+        RecyclerView resultsList = (RecyclerView) findViewById(R.id.search_results);
+        resultsList.setHasFixedSize(true);
+        resultsList.setLayoutManager(mLayoutManager);
+        resultsList.setAdapter(mAdapter);
+        resultsList.addOnScrollListener(mScrollListener);
     }
 
     @Override
@@ -115,39 +88,7 @@ public class PlaylistLauncher extends BaseActivity implements
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
 
             if (response.getType() == AuthenticationResponse.Type.TOKEN) {
-                mActionListener = new SearchPresenter(this, this);
-                mActionListener.init( response.getAccessToken());
-                mActionListener.getPlaylist();
 
-                // Setup search results list
-                mAdapter = new SearchResultsAdapter(this, new SearchResultsAdapter.ItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(View itemView, Track item) {
-                        mActionListener.selectTrack(item);
-                        mPlayer.playUri(null, item.uri, 0, 0);
-                    }
-                });
-
-                RecyclerView resultsList = (RecyclerView) findViewById(R.id.search_results);
-                resultsList.setHasFixedSize(true);
-                resultsList.setLayoutManager(mLayoutManager);
-                resultsList.setAdapter(mAdapter);
-                resultsList.addOnScrollListener(mScrollListener);
-
-                Config playerConfig = new Config(this, response.getAccessToken(), SpotifyConstants.cID);
-                Spotify.getPlayer(playerConfig, this, new SpotifyPlayer.InitializationObserver() {
-                    @Override
-                    public void onInitialized(SpotifyPlayer spotifyPlayer) {
-                        mPlayer = spotifyPlayer;
-                        mPlayer.addConnectionStateCallback(PlaylistLauncher.this);
-                        mPlayer.addNotificationCallback(PlaylistLauncher.this);
-                    }
-
-                    @Override
-                    public void onError(Throwable throwable) {
-                        Log.e("MainActivity", "Could not initialize player: " + throwable.getMessage());
-                    }
-                });
 
 
             }
@@ -156,7 +97,6 @@ public class PlaylistLauncher extends BaseActivity implements
 
     @Override
     protected void onDestroy() {
-        Spotify.destroyPlayer(this);
         super.onDestroy();
     }
 
@@ -184,7 +124,7 @@ public class PlaylistLauncher extends BaseActivity implements
     public void onLoggedIn() {
         Log.d("SpotifyConnect", "User logged in");
 
-//        mPlayer.playUri(null, "spotify:track:2TpxZ7JUBn3uw46aR7qd6V", 0, 0);
+//        BaseActivity.mPlayer.playUri(null, "spotify:track:2TpxZ7JUBn3uw46aR7qd6V", 0, 0);
     }
 
     @Override

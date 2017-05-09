@@ -36,7 +36,6 @@ public class MainActivity extends BaseActivity implements
 {
     private static final int REQUEST_CODE = 1337;
 
-    private Player mPlayer;
     private RecordSlider slider;
     private ImageView recordImageView;
     private GifDrawable recordGif;
@@ -122,10 +121,10 @@ public class MainActivity extends BaseActivity implements
                     }
                     case MotionEvent.ACTION_UP: {
                         if(touchedRecord) {
-                            long position = mPlayer.getPlaybackState().positionMs;
+                            long position = BaseActivity.mPlayer.getPlaybackState().positionMs;
                             //need to implement a check for valid position with regard to playlist
                             //and track
-                            mPlayer.seekToPosition(new Player.OperationCallback() {
+                            BaseActivity.mPlayer.seekToPosition(new Player.OperationCallback() {
                                 @Override
                                 public void onSuccess() {
                                     recordImageView.setImageDrawable(recordGif);
@@ -184,13 +183,14 @@ public class MainActivity extends BaseActivity implements
         if (requestCode == REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
             if (response.getType() == AuthenticationResponse.Type.TOKEN) {
+                BaseActivity.token = response.getAccessToken();
                 Config playerConfig = new Config(this, response.getAccessToken(), SpotifyConstants.cID);
                 Spotify.getPlayer(playerConfig, this, new SpotifyPlayer.InitializationObserver() {
                     @Override
                     public void onInitialized(SpotifyPlayer spotifyPlayer) {
-                        mPlayer = spotifyPlayer;
-                        mPlayer.addConnectionStateCallback(MainActivity.this);
-                        mPlayer.addNotificationCallback(MainActivity.this);
+                        BaseActivity.mPlayer = spotifyPlayer;
+                        BaseActivity.mPlayer.addConnectionStateCallback(MainActivity.this);
+                        BaseActivity.mPlayer.addNotificationCallback(MainActivity.this);
                     }
 
                     @Override
@@ -205,7 +205,7 @@ public class MainActivity extends BaseActivity implements
     @Override
     protected void onDestroy() {
 
-        Spotify.destroyPlayer(this);
+        //Spotify.destroyPlayer(this);
         super.onDestroy();
     }
 
@@ -215,7 +215,7 @@ public class MainActivity extends BaseActivity implements
         switch (playerEvent) {
             // Handle event type as necessary
             case kSpPlaybackNotifyMetadataChanged: {
-                Metadata.Track track = mPlayer.getMetadata().currentTrack;
+                Metadata.Track track = BaseActivity.mPlayer.getMetadata().currentTrack;
                 String song = track.name;
                 String artist = track.artistName;
                 textViewArtist.setText(getResources().getText(R.string.artist) + "  " + artist);
@@ -241,7 +241,7 @@ public class MainActivity extends BaseActivity implements
     public void onLoggedIn() {
         Log.d("SpotifyConnect", "User logged in");
 
-        mPlayer.playUri(null, "spotify:track:2TpxZ7JUBn3uw46aR7qd6V", 0, 0);
+        BaseActivity.mPlayer.playUri(null, "spotify:track:2TpxZ7JUBn3uw46aR7qd6V", 0, 0);
 
     }
 
