@@ -25,6 +25,13 @@ public class TraditionalActivity extends BaseActivity implements
     TextView track;
     TextView time;
     TextView title;
+<<<<<<< HEAD
+=======
+    TextView artist;
+    TextView song;
+
+    //playCheck playUIthread;
+>>>>>>> cc96651ad15aa3b41054459755708f9f4f53a8f8
     boolean currentlyListening;
 
     //define text color
@@ -42,6 +49,9 @@ public class TraditionalActivity extends BaseActivity implements
 
         //setPlayButton();
         setTraditionalViewSettings();
+        setSongAndArtist();
+
+        BaseActivity.mPlayer.addNotificationCallback(TraditionalActivity.this);
 
 
         //set play button listener
@@ -190,8 +200,39 @@ public class TraditionalActivity extends BaseActivity implements
         title = (TextView) findViewById(R.id.toolbar_title);
         time = (TextView) findViewById(R.id.text_timecode);
         track = (TextView) findViewById(R.id.text_trackno);
+        artist = (TextView) findViewById(R.id.textViewArtist);
+        song = (TextView) findViewById(R.id.textViewSong);
         title.setTextColor(textColor);
         track.setTextColor(textColor);
         time.setTextColor(textColor);
+        artist.setTextColor(textColor);
+        song.setTextColor(textColor);
+    }
+
+    private void setSongAndArtist(){
+        Metadata.Track track = BaseActivity.mPlayer.getMetadata().currentTrack;
+        String s = track.name;
+        String a = track.artistName;
+        artist.setText(getResources().getText(R.string.artist) + "  " + a);
+        song.setText(getResources().getText(R.string.song) + "  " + s);
+    }
+
+    @Override
+    public void onPlaybackEvent(PlayerEvent playerEvent) {
+        Log.d("TraditionalActivity", "Playback event received: " + playerEvent.name());
+        switch (playerEvent) {
+            // Handle event type as necessary
+            case kSpPlaybackNotifyMetadataChanged: {
+                setSongAndArtist();
+
+            }
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onPlaybackError(Error error) {
+
     }
 }

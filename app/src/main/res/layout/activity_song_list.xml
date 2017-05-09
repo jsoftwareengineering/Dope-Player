@@ -16,17 +16,15 @@
         tools:layout_editor_absoluteX="0dp"
 
         android:layout_marginBottom="0dp" />
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Dope.3" />
+
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/search_results"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_heightPercent="90%"
-        android:scrollbars="vertical"/>
+        android:scrollbars="vertical"
+        android:background="@color/primaryPink"
+    />
 
 </android.support.percent.PercentRelativeLayout>

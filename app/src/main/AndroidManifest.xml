@@ -17,16 +17,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".SongList"
-            android:label="@string/title_activity_song_list"
-            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".SpotifyConnect" />
         <activity android:name=".PlaylistLauncher" />
         <activity
             android:name="com.spotify.sdk.android.authentication.LoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity android:name=".TraditionalActivity"></activity>
+        <activity android:name=".Notificationview"></activity>
+        <receiver android:name=".MainActivity$closeButtonListener" />
+
+        <receiver android:name=".MainActivity$resumeButtonListener" />
+
+        <receiver android:name=".MainActivity$PauseSong" />
+
+
     </application>
 
 </manifest>
