@@ -7,11 +7,16 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.spotify.sdk.android.player.ConnectionStateCallback;
 import com.spotify.sdk.android.player.Error;
+import com.spotify.sdk.android.player.Metadata;
 import com.spotify.sdk.android.player.PlaybackState;
 import com.spotify.sdk.android.player.Player;
+import com.spotify.sdk.android.player.PlayerEvent;
+import com.spotify.sdk.android.player.SpotifyPlayer;
 
-public class TraditionalActivity extends BaseActivity {
+public class TraditionalActivity extends BaseActivity implements
+        SpotifyPlayer.NotificationCallback {
 
     //declare variables
     ImageButton playButton;
@@ -20,7 +25,6 @@ public class TraditionalActivity extends BaseActivity {
     TextView track;
     TextView time;
     TextView title;
-    //playCheck playUIthread;
     boolean currentlyListening;
 
     //define text color
@@ -36,11 +40,9 @@ public class TraditionalActivity extends BaseActivity {
         nextButton = (ImageButton) findViewById(R.id.button_next);
         previousButton = (ImageButton) findViewById(R.id.button_previous);
 
-        setPlayButton();
+        //setPlayButton();
         setTraditionalViewSettings();
 
-        //playUIthread = new playCheck();
-        //playUIthread.start();
 
         //set play button listener
         playButton.setOnClickListener(new View.OnClickListener() {
@@ -48,9 +50,9 @@ public class TraditionalActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 currentlyListening = mPlayer.getPlaybackState().isPlaying;
-                if(currentlyListening){
+                if (currentlyListening) {
                     pausePlayback();
-                } else{
+                } else {
                     resumePlayback();
                 }
 
@@ -61,7 +63,7 @@ public class TraditionalActivity extends BaseActivity {
         nextButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 changeSong("next");
             }
         });
@@ -70,10 +72,37 @@ public class TraditionalActivity extends BaseActivity {
         previousButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 changeSong("previous");
             }
         });
+    }
+
+    @Override
+    public void onPlaybackEvent(PlayerEvent playerEvent) {
+        Log.d("MainActivity", "Playback event received: " + playerEvent.name());
+        switch (playerEvent) {
+            // Handle event type as necessary
+            case kSpPlaybackNotifyPause: {
+                Log.d("playback", "button method called");
+                setPlayButton(true);
+            }
+            case kSpPlaybackNotifyPlay: {
+                setPlayButton(false);
+            }
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onPlaybackError(Error error) {
+        Log.d("MainActivity", "Playback error received: " + error.name());
+        switch (error) {
+            // Handle error type as necessary
+            default:
+                break;
+        }
     }
 
     @Override
@@ -87,13 +116,15 @@ public class TraditionalActivity extends BaseActivity {
     }
 
     //set play/pause button icon depending on playback state
-    private void setPlayButton(){
+    private void setPlayButton(boolean command){
 
         //if currently playing, change playButton to pause icon
-        if(mPlayer.getPlaybackState().isPlaying){
+        if(command){
             //set button image to pause
+            Log.d("control", "play button set to pause");
             playButton.setImageResource(R.drawable.ic_pause_black_48dp);
         } else{
+            Log.d("control", "play button set to play");
             playButton.setImageResource(R.drawable.ic_play_arrow_black_48dp);
         }
 
@@ -102,7 +133,7 @@ public class TraditionalActivity extends BaseActivity {
         BaseActivity.mPlayer.pause(new Player.OperationCallback() {
             @Override
             public void onSuccess() {
-                setPlayButton();
+                Log.d("Playback", "pause message sent to Spotify player");
             }
 
             @Override
@@ -115,7 +146,7 @@ public class TraditionalActivity extends BaseActivity {
         BaseActivity.mPlayer.resume(new Player.OperationCallback() {
             @Override
             public void onSuccess() {
-                setPlayButton();
+                Log.d("Playback", "play message sent to Spotify player");
             }
 
             @Override
@@ -124,33 +155,7 @@ public class TraditionalActivity extends BaseActivity {
             }
         });
     }
-/*
-    private class playCheck extends Thread {
 
-        boolean threadActive;
-
-        public void onStart(){
-            threadActive = true;
-        }
-
-        public void run() {
-
-            boolean playBackState;
-
-            try {
-                while(threadActive) {
-                    setPlayButton();
-                    playBackState = BaseActivity.mPlayer.getPlaybackState().isPlaying;
-                    System.out.println("playback state is:  " + String.valueOf(playBackState));
-                    wait(1000);
-                }
-            } catch (InterruptedException e) {
-                Log.e("thread", "Thread interupted");
-                threadActive = false;
-            }
-        }
-    }
-*/
     private void changeSong(String direction){
         if (direction.toLowerCase() == "next") {
             BaseActivity.mPlayer.skipToNext(new Player.OperationCallback(){
