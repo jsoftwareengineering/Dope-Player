@@ -146,7 +146,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     public void onLoggedIn() {
         Log.d("SpotifyConnect", "User logged in");
 
-        BaseActivity.mPlayer.playUri(null, "spotify:user:nneeraj2:playlist:6hal73jyVVzSFblTIWOm1R", 0, 0);
+        BaseActivity.mPlayer.playUri(null, "spotify:user:hendemic:playlist:4fWo8AAMu5GMnLtAhtPktC", 0, 0);
 
     }
 
