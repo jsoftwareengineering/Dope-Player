@@ -41,8 +41,6 @@ import pl.droidsonroids.gif.GifDrawable;
 public class MainActivity extends BaseActivity implements
         SpotifyPlayer.NotificationCallback, ConnectionStateCallback
 {
-    private static final int REQUEST_CODE = 1337;
-
     private RecordSlider slider;
     private ImageView recordImageView;
     private GifDrawable recordGif;
@@ -51,6 +49,7 @@ public class MainActivity extends BaseActivity implements
     private double angle;
     private double previousAngle;
     private double degreesMovedSincePress;
+    private static boolean listenerSet = false;
 
     RelativeLayout layout;
     TextView textViewArtist;
@@ -65,14 +64,53 @@ public class MainActivity extends BaseActivity implements
         textViewArtist = (TextView) findViewById(R.id.textViewArtist);
         textViewSong = (TextView) findViewById(R.id.textViewSong);
 
-        AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(SpotifyConstants.cID,
-                AuthenticationResponse.Type.TOKEN,
-                SpotifyConstants.cRedirectURI);
-        builder.setScopes(new String[]{"user-read-private", "streaming"});
-        AuthenticationRequest request = builder.build();
+        if(mPlayer == null) {
+            spotifyLogin();
+        } else {
+            mPlayer.removeNotificationCallback(notificationCallback);
+            notificationCallback = MainActivity.this;
+            BaseActivity.mPlayer.addNotificationCallback(notificationCallback);
+            setSongAndArtist();
+        }
 
-        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
+        recordSetup();
+    }
 
+
+
+    @Override
+    protected void onDestroy() {
+
+        //Spotify.destroyPlayer(this);
+        super.onDestroy();
+    }
+
+
+    @Override
+    public void onPlaybackEvent(PlayerEvent playerEvent) {
+        Log.d("MainActivity", "Playback event received: " + playerEvent.name());
+        switch (playerEvent) {
+            // Handle event type as necessary
+            case kSpPlaybackNotifyMetadataChanged: {
+                setSongAndArtist();
+                recordImageView.setImageDrawable(recordGif);
+            }
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onPlaybackError(Error error) {
+        Log.d("MainActivity", "Playback error received: " + error.name());
+        switch (error) {
+            // Handle error type as necessary
+            default:
+                break;
+        }
+    }
+
+    private void recordSetup() {
         slider = (RecordSlider) findViewById(R.id.slider);
         recordImageView = (ImageView) findViewById(R.id.gifImageViewRecord);
         touchedRecord = false;
@@ -86,10 +124,11 @@ public class MainActivity extends BaseActivity implements
             e.printStackTrace();
         }
 
+        if(mPlayer != null && mPlayer.getPlaybackState().isPlaying) {
+            recordImageView.setImageDrawable(recordGif);
+        }
+
         recordImageView.setDrawingCacheEnabled(true);
-
-
-
 
         recordImageView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -201,98 +240,6 @@ public class MainActivity extends BaseActivity implements
 
             }
         });
-
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        super.onActivityResult(requestCode, resultCode, intent);
-
-        // Check if result comes from the correct activity
-        if (requestCode == REQUEST_CODE) {
-            AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
-            if (response.getType() == AuthenticationResponse.Type.TOKEN) {
-                BaseActivity.token = response.getAccessToken();
-                Config playerConfig = new Config(this, response.getAccessToken(), SpotifyConstants.cID);
-                Spotify.getPlayer(playerConfig, this, new SpotifyPlayer.InitializationObserver() {
-                    @Override
-                    public void onInitialized(SpotifyPlayer spotifyPlayer) {
-                        BaseActivity.mPlayer = spotifyPlayer;
-                        BaseActivity.mPlayer.addConnectionStateCallback(MainActivity.this);
-                        BaseActivity.mPlayer.addNotificationCallback(MainActivity.this);
-                    }
-
-                    @Override
-                    public void onError(Throwable throwable) {
-                        Log.e("MainActivity", "Could not initialize player: " + throwable.getMessage());
-                    }
-                });
-            }
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-
-        //Spotify.destroyPlayer(this);
-        super.onDestroy();
-    }
-
-
-    @Override
-    public void onPlaybackEvent(PlayerEvent playerEvent) {
-        Log.d("MainActivity", "Playback event received: " + playerEvent.name());
-        switch (playerEvent) {
-            // Handle event type as necessary
-            case kSpPlaybackNotifyMetadataChanged: {
-                Metadata.Track track = BaseActivity.mPlayer.getMetadata().currentTrack;
-                String song = track.name;
-                String artist = track.artistName;
-                textViewArtist.setText(getResources().getText(R.string.artist) + "  " + artist);
-                textViewSong.setText(getResources().getText(R.string.song) + "  " + song);
-                recordImageView.setImageDrawable(recordGif);
-            }
-            default:
-                break;
-        }
-    }
-
-    @Override
-    public void onPlaybackError(Error error) {
-        Log.d("MainActivity", "Playback error received: " + error.name());
-        switch (error) {
-            // Handle error type as necessary
-            default:
-                break;
-        }
-    }
-
-    @Override
-    public void onLoggedIn() {
-        Log.d("SpotifyConnect", "User logged in");
-
-        BaseActivity.mPlayer.playUri(null, "spotify:user:nneeraj2:playlist:6hal73jyVVzSFblTIWOm1R", 0, 0);
-
-    }
-
-    @Override
-    public void onLoggedOut() {
-        Log.d("MainActivity", "User logged out");
-    }
-
-    @Override
-    public void onLoginFailed(Error error) {
-        Log.d("MainActivity", "Login Failed: " + error.toString());
-    }
-
-    @Override
-    public void onTemporaryError() {
-        Log.d("MainActivity", "Temporary error occurred");
-    }
-
-    @Override
-    public void onConnectionMessage(String message) {
-        Log.d("MainActivity", "Received connection message: " + message);
     }
 
     @Override
@@ -390,6 +337,34 @@ public class MainActivity extends BaseActivity implements
                 }
             };
             BaseActivity.mPlayer.pause(operationCallback);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+
+        // Check if result comes from the correct activity
+        if (requestCode == REQUEST_CODE) {
+            AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
+            if (response.getType() == AuthenticationResponse.Type.TOKEN) {
+                BaseActivity.token = response.getAccessToken();
+                Config playerConfig = new Config(this, response.getAccessToken(), SpotifyConstants.cID);
+                Spotify.getPlayer(playerConfig, this, new SpotifyPlayer.InitializationObserver() {
+                    @Override
+                    public void onInitialized(SpotifyPlayer spotifyPlayer) {
+                        BaseActivity.mPlayer = spotifyPlayer;
+                        BaseActivity.mPlayer.addConnectionStateCallback(MainActivity.this);
+                        notificationCallback = MainActivity.this;
+                        BaseActivity.mPlayer.addNotificationCallback(notificationCallback);
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        Log.e("BaseActivity", "Could not initialize player: " + throwable.getMessage());
+                    }
+                });
+            }
         }
     }
 }

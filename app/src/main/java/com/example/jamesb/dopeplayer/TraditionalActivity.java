@@ -1,5 +1,6 @@
 package com.example.jamesb.dopeplayer;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,12 +8,16 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.spotify.sdk.android.authentication.AuthenticationClient;
+import com.spotify.sdk.android.authentication.AuthenticationResponse;
+import com.spotify.sdk.android.player.Config;
 import com.spotify.sdk.android.player.ConnectionStateCallback;
 import com.spotify.sdk.android.player.Error;
 import com.spotify.sdk.android.player.Metadata;
 import com.spotify.sdk.android.player.PlaybackState;
 import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.PlayerEvent;
+import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.player.SpotifyPlayer;
 
 public class TraditionalActivity extends BaseActivity implements
@@ -25,8 +30,6 @@ public class TraditionalActivity extends BaseActivity implements
     TextView track;
     TextView time;
     TextView title;
-    TextView artist;
-    TextView song;
 
     boolean currentlyListening;
     boolean isbuttonsettonPlay;
@@ -46,10 +49,29 @@ public class TraditionalActivity extends BaseActivity implements
 
         //setPlayButton();
         setTraditionalViewSettings();
-        setSongAndArtist();
 
-        BaseActivity.mPlayer.addNotificationCallback(TraditionalActivity.this);
+        if(mPlayer == null) {
+            spotifyLogin();
+        } else {
+            setSongAndArtist();
+            setUpControls();
+            mPlayer.removeNotificationCallback(notificationCallback);
+            notificationCallback = TraditionalActivity.this;
+            BaseActivity.mPlayer.addNotificationCallback(notificationCallback);
+        }
+    }
 
+    @Override
+    int getContentViewId() {
+        return R.layout.activity_traditional;
+    }
+
+    @Override
+    int getNavigationMenuItemId() {
+        return R.id.menu_traditional;
+    }
+
+    private void setUpControls() {
 
         currentlyListening = BaseActivity.mPlayer.getPlaybackState().isPlaying;
         if (currentlyListening) {
@@ -90,16 +112,6 @@ public class TraditionalActivity extends BaseActivity implements
                 changeSong("previous");
             }
         });
-    }
-
-    @Override
-    int getContentViewId() {
-        return R.layout.activity_traditional;
-    }
-
-    @Override
-    int getNavigationMenuItemId() {
-        return R.id.menu_traditional;
     }
 
     //set play/pause button icon depending on playback state
@@ -182,17 +194,8 @@ public class TraditionalActivity extends BaseActivity implements
         song.setTextColor(textColor);
     }
 
-    private void setSongAndArtist(){
-        Metadata.Track track = BaseActivity.mPlayer.getMetadata().currentTrack;
-        String s = track.name;
-        String a = track.artistName;
-        artist.setText(getResources().getText(R.string.artist) + "  " + a);
-        song.setText(getResources().getText(R.string.song) + "  " + s);
-    }
-
     @Override
     public void onPlaybackEvent(PlayerEvent playerEvent) {
-
         switch (playerEvent) {
             // Handle event type as necessary
             case kSpPlaybackNotifyMetadataChanged: {
@@ -208,6 +211,7 @@ public class TraditionalActivity extends BaseActivity implements
             case kSpPlaybackNotifyPlay: {
                 setPauseButton();
                 Log.d("TraditionalActivity", "Playback event received: kSpPlaybackNotifyPlay");
+                setUpControls();
             }
             break;
             default:
@@ -216,7 +220,30 @@ public class TraditionalActivity extends BaseActivity implements
     }
 
     @Override
-    public void onPlaybackError(Error error) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
 
+        // Check if result comes from the correct activity
+        if (requestCode == REQUEST_CODE) {
+            AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
+            if (response.getType() == AuthenticationResponse.Type.TOKEN) {
+                BaseActivity.token = response.getAccessToken();
+                Config playerConfig = new Config(this, response.getAccessToken(), SpotifyConstants.cID);
+                Spotify.getPlayer(playerConfig, this, new SpotifyPlayer.InitializationObserver() {
+                    @Override
+                    public void onInitialized(SpotifyPlayer spotifyPlayer) {
+                        BaseActivity.mPlayer = spotifyPlayer;
+                        BaseActivity.mPlayer.addConnectionStateCallback(TraditionalActivity.this);
+                        notificationCallback = TraditionalActivity.this;
+                        BaseActivity.mPlayer.addNotificationCallback(notificationCallback);
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        Log.e("BaseActivity", "Could not initialize player: " + throwable.getMessage());
+                    }
+                });
+            }
+        }
     }
 }
