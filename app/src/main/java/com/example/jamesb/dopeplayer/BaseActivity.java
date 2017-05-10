@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.spotify.sdk.android.player.Player;
+import com.spotify.sdk.android.player.SpotifyPlayer;
 
 /*
  * Mike, 05-MAY-2017
@@ -17,16 +18,29 @@ import com.spotify.sdk.android.player.Player;
  * Derived from http://stackoverflow.com/questions/41744219/bottomnavigationview-between-activities
  */
 
-public abstract class BaseActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
+public abstract class BaseActivity extends AppCompatActivity implements
+        BottomNavigationView.OnNavigationItemSelectedListener, SpotifyPlayer.NotificationCallback {
     protected BottomNavigationView navigationView;
     public static Player mPlayer;
     public static String token;
+    /*public static Player.OperationCallback mOperationCallback= = new Player.OperationCallback() {
+        @Override
+        public void onSuccess() {
+            Log.d("Callback", "OperationCallback success");
+        }
+
+        @Override
+        public void onError(Error error) {
+            Log.d("Callback", "OperationCallack error: " + error);
+        }
+    };*/
 
     //on create, set the view and add listener to bottom navigation bar
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(getContentViewId());
+
 
         //set listener for bottom navigation bar by id
         navigationView = (BottomNavigationView) findViewById(R.id.navigation);

@@ -29,6 +29,7 @@ public class TraditionalActivity extends BaseActivity implements
     TextView song;
 
     boolean currentlyListening;
+    boolean isbuttonsettonPlay;
 
     //define text color
     int textColor = Color.parseColor("#000000");
@@ -49,11 +50,12 @@ public class TraditionalActivity extends BaseActivity implements
 
         BaseActivity.mPlayer.addNotificationCallback(TraditionalActivity.this);
 
+
         currentlyListening = BaseActivity.mPlayer.getPlaybackState().isPlaying;
         if (currentlyListening) {
-            setPlayButton(true);
+            setPauseButton();
         } else {
-            setPlayButton(false);
+            setPlayButton();
         }
 
         //set play button listener
@@ -101,20 +103,20 @@ public class TraditionalActivity extends BaseActivity implements
     }
 
     //set play/pause button icon depending on playback state
-    private void setPlayButton(boolean command){
-        if(command) {
-            Log.d("control", "setPlayButton—play button set to pause");
-            playButton.setImageResource(R.drawable.ic_pause_black_48dp);
-        } else {
-            Log.d("control", "setPlayButton-play button set to play");
-            playButton.setImageResource(R.drawable.ic_play_arrow_black_48dp);
-        }
+    private void setPlayButton(){
+        Log.d("control", "setPlayButton-play button set to play");
+        playButton.setImageResource(R.drawable.ic_play_arrow_black_48dp);
+    }
+    private void setPauseButton() {
+        Log.d("control", "setPlayButton—play button set to pause");
+        playButton.setImageResource(R.drawable.ic_pause_black_48dp);
     }
     private void pausePlayback(){
         BaseActivity.mPlayer.pause(new Player.OperationCallback() {
             @Override
             public void onSuccess() {
-                setPlayButton(false);
+
+                //setPlayButton(false);
             }
 
             @Override
@@ -127,7 +129,7 @@ public class TraditionalActivity extends BaseActivity implements
         BaseActivity.mPlayer.resume(new Player.OperationCallback() {
             @Override
             public void onSuccess() {
-                setPlayButton(true);
+                //setPlayButton(true);
             }
 
             @Override
@@ -190,21 +192,24 @@ public class TraditionalActivity extends BaseActivity implements
 
     @Override
     public void onPlaybackEvent(PlayerEvent playerEvent) {
-        Log.d("TraditionalActivity", "Playback event received: " + playerEvent.name());
+
         switch (playerEvent) {
             // Handle event type as necessary
             case kSpPlaybackNotifyMetadataChanged: {
                 setSongAndArtist();
+                Log.d("TraditionalActivity", "Playback event received: kSpPlaybackNotifyMetadataChanged");
             }
-
-            /*
+            break;
             case kSpPlaybackNotifyPause: {
-
-                setPlayButton(false);
+                setPlayButton();
+                Log.d("TraditionalActivity", "Playback event received: kSpPlaybackNotifyPause");
             }
+            break;
             case kSpPlaybackNotifyPlay: {
-                setPlayButton(true);
-            } */
+                setPauseButton();
+                Log.d("TraditionalActivity", "Playback event received: kSpPlaybackNotifyPlay");
+            }
+            break;
             default:
                 break;
         }
