@@ -6,4 +6,6 @@
     <string name="queue_name">queue</string>
     <string name="artist">Artist  /</string>
     <string name="song">Song  /</string>
+    <string name="next">Next Track</string>
+    <string name="previous">Previous Track</string>
 </resources>

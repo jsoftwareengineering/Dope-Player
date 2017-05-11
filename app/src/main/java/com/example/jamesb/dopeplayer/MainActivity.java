@@ -51,6 +51,9 @@ public class MainActivity extends BaseActivity implements
     private double degreesMovedSincePress;
     private static boolean listenerSet = false;
     int count = 0;
+    int seekToMS = 0;
+    long pausePosition;
+    boolean wasPlaying;
 
     RelativeLayout layout;
     TextView textViewArtist;
@@ -95,15 +98,18 @@ public class MainActivity extends BaseActivity implements
             // Handle event type as necessary
             case kSpPlaybackNotifyMetadataChanged: {
                 setSongAndArtist();
-                recordImageView.setImageDrawable(recordGif);
             }
+            break;
             case kSpPlaybackNotifyPause: {
-                Log.d("MainActivity", "Playback event received: kSpPlaybackNotifyPause");
+                //Log.d("MainActivity", "Playback event received: kSpPlaybackNotifyPause");
+                recordImageView.setImageDrawable(recordImage);
                 time.post(mUpdateTime);
             }
             break;
             case kSpPlaybackNotifyPlay: {
-                Log.d("MainActivity", "Playback event received: kSpPlaybackNotifyPlay");
+                //Log.d("MainActivity", "Playback event received: kSpPlaybackNotifyPlay");
+                recordGif.seekToFrame(0);
+                recordImageView.setImageDrawable(recordGif);
                 time.post(mUpdateTime);
             }
             break;
@@ -146,8 +152,6 @@ public class MainActivity extends BaseActivity implements
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
 
-
-
                 switch (motionEvent.getAction()) {
 
                     case MotionEvent.ACTION_DOWN: {
@@ -178,39 +182,20 @@ public class MainActivity extends BaseActivity implements
                                     spotifyLogin();
                                 } else {
                                     if (mPlayer.getPlaybackState().isPlaying) {
-                                        mPlayer.pause(new Player.OperationCallback() {
-                                            @Override
-                                            public void onSuccess() {
-                                                recordImageView.setImageDrawable(recordImage);
-                                            }
-
-                                            @Override
-                                            public void onError(Error error) {
-
-                                            }
-                                        });
+                                        mPlayer.pause(null);
                                     } else {
-                                        mPlayer.resume(new Player.OperationCallback() {
-                                            @Override
-                                            public void onSuccess() {
-                                                recordImageView.setImageDrawable(recordGif);
-                                            }
-
-                                            @Override
-                                            public void onError(Error error) {
-
-                                            }
-                                        });
+                                        mPlayer.resume(null);
                                     }
                                 }
                             } else {
-                                recordImageView.setImageDrawable(recordImage);
+                                //recordImageView.setImageDrawable(recordImage);
                                 degreesMovedSincePress = 0;
                                 slider.onTouchEventCustom(motionEvent, touchedRecord);
+                                wasPlaying = mPlayer.getPlaybackState().isPlaying;
                                 BaseActivity.mPlayer.pause(new Player.OperationCallback() {
                                     @Override
                                     public void onSuccess() {
-
+                                        pausePosition = BaseActivity.mPlayer.getPlaybackState().positionMs;
                                     }
 
                                     @Override
@@ -240,32 +225,22 @@ public class MainActivity extends BaseActivity implements
                     }
                     case MotionEvent.ACTION_UP: {
                         if(touchedRecord) {
-                            long position = BaseActivity.mPlayer.getPlaybackState().positionMs;
+
                             //need to implement a check for valid position with regard to playlist
                             //and track
-                            BaseActivity.mPlayer.seekToPosition(new Player.OperationCallback() {
-                                @Override
-                                public void onSuccess() {
-                                    recordImageView.setImageDrawable(recordGif);
-                                    recordGif.seekToFrame(0);
-                                    BaseActivity.mPlayer.resume(new Player.OperationCallback() {
-                                        @Override
-                                        public void onSuccess() {
-
-                                        }
-
-                                        @Override
-                                        public void onError(Error error) {
-
-                                        }
-                                    });
+                            if(seekToMS < 0) {
+                                //previous track
+                                mPlayer.skipToPrevious(null);
+                            } else if(seekToMS > mPlayer.getMetadata().currentTrack.durationMs) {
+                                //next track
+                                mPlayer.skipToNext(null);
+                            } else {
+                                BaseActivity.mPlayer.seekToPosition(null, seekToMS);
+                                if(wasPlaying) {
+                                    mPlayer.resume(null);
                                 }
+                            }
 
-                                @Override
-                                public void onError(Error error) {
-
-                                }
-                            }, (int) (position + degreesMovedSincePress / .018));
                             touchedRecord = false;
                         }
 
@@ -299,6 +274,16 @@ public class MainActivity extends BaseActivity implements
                 a.setRepeatCount(-1);
                 a.setDuration(10);
                 recordImageView.startAnimation(a);
+
+                //this math makes it 20 seconds per full rotation
+                seekToMS = (int) (pausePosition + degreesMovedSincePress / .018);
+                if(seekToMS > mPlayer.getMetadata().currentTrack.durationMs) {
+                    time.setText(R.string.next);
+                } else if(seekToMS < 0) {
+                    time.setText(R.string.previous);
+                } else {
+                    updateTimeText(seekToMS);
+                }
 
             }
         });

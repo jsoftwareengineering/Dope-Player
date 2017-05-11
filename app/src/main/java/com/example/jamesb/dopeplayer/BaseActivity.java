@@ -219,6 +219,13 @@ public abstract class BaseActivity extends AppCompatActivity implements
         return finalTimerString;
     }
 
+    //TODO stub
+    public void setTrackNumber() {
+        int trackNumber = 0;
+        int outOf = 0;
+
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
