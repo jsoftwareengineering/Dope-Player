@@ -336,9 +336,9 @@ public class MainActivity extends BaseActivity implements
     }
     @Override
     public void onStop() {
+        super.onStop();
         if (mPlayer!= null) {
             addNotification();
-            super.onStop();
         }
 
     }
@@ -359,19 +359,11 @@ public class MainActivity extends BaseActivity implements
         public void onReceive(Context context, Intent intent) {
             Log.d("Here", "I am here");
             //BaseActivity.mPlayer.playUri(null, "spotify:track:2TpxZ7JUBn3uw46aR7qd6V", 0, 0);
-            Player.OperationCallback operationCallback = new Player.OperationCallback() {
-                @Override
-                public void onSuccess() {
 
-                }
-
-                @Override
-                public void onError(Error error) {
-
-                }
-            };
 //            BaseActivity.mPlayer.pause(operationCallback);
-            BaseActivity.mPlayer.resume(operationCallback);
+            if(mPlayer != null) {
+                BaseActivity.mPlayer.resume(null);
+            }
         }
     }
 
@@ -380,18 +372,9 @@ public class MainActivity extends BaseActivity implements
         public void onReceive(Context context, Intent intent) {
             Log.d("Here", "I am here");
             // BaseActivity.mPlayer.playUri(null, "spotify:track:2TpxZ7JUBn3uw46aR7qd6V", 0, 0);
-            Player.OperationCallback operationCallback = new Player.OperationCallback() {
-                @Override
-                public void onSuccess() {
-
-                }
-
-                @Override
-                public void onError(Error error) {
-
-                }
-            };
-            BaseActivity.mPlayer.pause(operationCallback);
+            if(mPlayer != null) {
+                BaseActivity.mPlayer.pause(null);
+            }
         }
     }
 

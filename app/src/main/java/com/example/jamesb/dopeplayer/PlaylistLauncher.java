@@ -67,33 +67,11 @@ public class PlaylistLauncher extends BaseActivity implements
         if (mPlayer == null) {
             spotifyLogin();
         } else {
-            mActionListener = new SearchPresenter(this, this);
-            mActionListener.init(BaseActivity.token);
-            mActionListener.getPlaylist();
-
-            // Setup search results list
-            mAdapter = new SearchResultsAdapter(this, new SearchResultsAdapter.ItemSelectedListener() {
-                @Override
-                public void onItemSelected(View itemView, Track item) {
-                    mActionListener.selectTrack(item);
-                    Log.d("Index", String.valueOf(index));
-
-                    BaseActivity.mPlayer.playUri(null, "spotify:user:hendemic:playlist:4fWo8AAMu5GMnLtAhtPktC", index, 0);
-                }
-            });
-
-            RecyclerView resultsList = (RecyclerView) findViewById(R.id.search_results);
-            resultsList.setHasFixedSize(true);
-            resultsList.setLayoutManager(mLayoutManager);
-            resultsList.setAdapter(mAdapter);
-            resultsList.addOnScrollListener(mScrollListener);
+            setup();
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        super.onActivityResult(requestCode, resultCode, intent);
-
+    private void setup() {
         mActionListener = new SearchPresenter(this, this);
         mActionListener.init(BaseActivity.token);
         mActionListener.getPlaylist();
@@ -114,8 +92,31 @@ public class PlaylistLauncher extends BaseActivity implements
         resultsList.setLayoutManager(mLayoutManager);
         resultsList.setAdapter(mAdapter);
         resultsList.addOnScrollListener(mScrollListener);
-        // Check if result comes from the correct activity
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+
+        // Check if result comes from the correct activity
+        if (requestCode == REQUEST_CODE) {
+            AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
+            if (response.getType() == AuthenticationResponse.Type.TOKEN) {
+                BaseActivity.token = response.getAccessToken();
+                Config playerConfig = new Config(this, response.getAccessToken(), SpotifyConstants.cID);
+                Spotify.getPlayer(playerConfig, this, new SpotifyPlayer.InitializationObserver() {
+                    @Override
+                    public void onInitialized(SpotifyPlayer spotifyPlayer) {
+                        setup();
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        Log.e("BaseActivity", "Could not initialize player: " + throwable.getMessage());
+                    }
+                });
+            }
+        }
     }
 
     @Override
