@@ -53,6 +53,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
     TextView artist;
     TextView song;
     TextView time;
+    TextView track;
+
     /*public static Player.OperationCallback mOperationCallback= = new Player.OperationCallback() {
         @Override
         public void onSuccess() {
@@ -79,6 +81,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         artist = (TextView) findViewById(R.id.textViewArtist);
         song = (TextView) findViewById(R.id.textViewSong);
         time = (TextView) findViewById(R.id.text_timecode);
+        track = (TextView) findViewById(R.id.text_trackno);
     }
 
     //on start, update the navigation bar state
@@ -236,7 +239,16 @@ public abstract class BaseActivity extends AppCompatActivity implements
     //TODO stub
     public void setTrackNumber() {
         int trackNumber = 0;
-        int outOf = 0;
+        int outOf = tracks.size();
+
+        //breaks if there is more than one track with the same name...
+        for(int i = 0 ; i < outOf ; i++) {
+            if (mPlayer.getMetadata().currentTrack.name.equals(tracks.get(i).name)) {
+                trackNumber = i + 1;
+                break;
+            }
+        }
+        track.setText(getResources().getString(R.string.track) + " " + trackNumber + "/" + outOf);
 
     }
 

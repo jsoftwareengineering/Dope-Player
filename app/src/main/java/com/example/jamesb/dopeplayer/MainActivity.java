@@ -77,6 +77,7 @@ public class MainActivity extends BaseActivity implements
             BaseActivity.mPlayer.addNotificationCallback(notificationCallback);
             setSongAndArtist();
             time.post(mUpdateTime);
+            setTrackNumber();
         }
 
         recordSetup();
@@ -112,6 +113,10 @@ public class MainActivity extends BaseActivity implements
                 recordGif.seekToFrame(0);
                 recordImageView.setImageDrawable(recordGif);
                 time.post(mUpdateTime);
+            }
+            break;
+            case kSpPlaybackNotifyTrackChanged: {
+                setTrackNumber();
             }
             break;
             default:

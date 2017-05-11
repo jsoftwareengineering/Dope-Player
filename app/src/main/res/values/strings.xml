@@ -8,4 +8,5 @@
     <string name="song">Song  /</string>
     <string name="next">Next Track</string>
     <string name="previous">Previous Track</string>
+    <string name="track">Track</string>
 </resources>
