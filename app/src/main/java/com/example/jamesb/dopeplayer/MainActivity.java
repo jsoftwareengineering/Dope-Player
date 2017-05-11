@@ -336,8 +336,10 @@ public class MainActivity extends BaseActivity implements
     }
     @Override
     public void onStop() {
-        addNotification();
-        super.onStop();
+        if (mPlayer!= null) {
+            addNotification();
+            super.onStop();
+        }
 
     }
 
