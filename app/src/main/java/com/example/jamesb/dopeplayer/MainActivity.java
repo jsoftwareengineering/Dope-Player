@@ -326,9 +326,9 @@ public class MainActivity extends BaseActivity implements
                         .setSmallIcon(R.drawable.record_control)
                         .setContentTitle("Dope Player")
                         .setContentText("")
-                        .addAction(R.drawable.ic_play_arrow_black_24dp, "Pause", pendingPauseIntent)
-                        .addAction(R.drawable.ic_pause_black_48dp, "Resume", pendingResumeIntent)
-                        .addAction(R.drawable.ic_pause_black_48dp, "Close", pendingSwitchIntent);
+                        .addAction(R.drawable.ic_pause_black_48dp, "Pause", pendingPauseIntent)
+                        .addAction(R.drawable.ic_play_arrow_black_48dp, "Resume", pendingResumeIntent)
+                        .addAction(R.mipmap.ic_close, "Close", pendingSwitchIntent);
 
         // Add as notification
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
