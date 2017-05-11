@@ -50,6 +50,7 @@ public class MainActivity extends BaseActivity implements
     private double previousAngle;
     private double degreesMovedSincePress;
     private static boolean listenerSet = false;
+    int count = 0;
 
     RelativeLayout layout;
     TextView textViewArtist;
@@ -140,23 +141,69 @@ public class MainActivity extends BaseActivity implements
 
                     case MotionEvent.ACTION_DOWN: {
                         Bitmap bmp = Bitmap.createBitmap(recordImageView.getDrawingCache());
-                        int color = bmp.getPixel((int) motionEvent.getX(), (int) motionEvent.getY());
+                        int touchX = (int) motionEvent.getX();
+                        int touchY = (int) motionEvent.getY();
+                        int color = bmp.getPixel(touchX, touchY);
                         touchedRecord = (color != Color.TRANSPARENT);
+
                         if(touchedRecord) {
-                            recordImageView.setImageDrawable(recordImage);
-                            degreesMovedSincePress = 0;
-                            slider.onTouchEventCustom(motionEvent, touchedRecord);
-                            BaseActivity.mPlayer.pause(new Player.OperationCallback() {
-                                @Override
-                                public void onSuccess() {
+                            //check to see if center area was pressed
+                            recordImageView.measure(recordImageView.getMeasuredWidth(),
+                                    recordImageView.getMeasuredHeight());
+                            int height = recordImageView.getHeight();
+                            int width = recordImageView.getWidth();
+                            int rX = (int) recordImageView.getX();
+                            int rY = (int) recordImageView.getY();
+                            int centerX = (rX + width) / 2;
+                            int centerY = (rY + height) / 2;
+                            int touchDist = width / 10;
 
+                            if(touchX > centerX - touchDist * 2 && touchX < centerX + touchDist &&
+                                    touchY > centerY - touchDist * 2 && touchY < centerY + touchDist) {
+                                count++;
+                                Log.d("touch", "center touch " + count);
+                                touchedRecord = false;
+                                if (mPlayer.getPlaybackState().isPlaying) {
+                                    mPlayer.pause(new Player.OperationCallback() {
+                                        @Override
+                                        public void onSuccess() {
+                                            recordImageView.setImageDrawable(recordImage);
+                                        }
+
+                                        @Override
+                                        public void onError(Error error) {
+
+                                        }
+                                    });
+                                } else {
+                                    mPlayer.resume(new Player.OperationCallback() {
+                                        @Override
+                                        public void onSuccess() {
+                                            recordImageView.setImageDrawable(recordGif);
+                                        }
+
+                                        @Override
+                                        public void onError(Error error) {
+
+                                        }
+                                    });
                                 }
+                            } else {
+                                recordImageView.setImageDrawable(recordImage);
+                                degreesMovedSincePress = 0;
+                                slider.onTouchEventCustom(motionEvent, touchedRecord);
+                                BaseActivity.mPlayer.pause(new Player.OperationCallback() {
+                                    @Override
+                                    public void onSuccess() {
 
-                                @Override
-                                public void onError(Error error) {
+                                    }
 
-                                }
-                            });
+                                    @Override
+                                    public void onError(Error error) {
+
+                                    }
+                                });
+                            }
                         }
                     }
                     case MotionEvent.ACTION_MOVE: {
