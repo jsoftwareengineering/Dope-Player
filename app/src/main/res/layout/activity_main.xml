@@ -10,6 +10,15 @@
     tools:context="com.example.jamesb.dopeplayer.MainActivity"
     >
 
+    <ImageView
+        android:id="@+id/background_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/background_gradient_cat"
+        android:scaleType="center"
+
+        />
+
     <include
         android:id="@+id/top_title"
         android:layout_width="fill_parent"
