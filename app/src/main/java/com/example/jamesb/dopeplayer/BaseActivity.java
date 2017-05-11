@@ -22,6 +22,18 @@ import com.spotify.sdk.android.player.PlayerEvent;
 import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.player.SpotifyPlayer;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import kaaes.spotify.webapi.android.SpotifyApi;
+import kaaes.spotify.webapi.android.SpotifyCallback;
+import kaaes.spotify.webapi.android.SpotifyError;
+import kaaes.spotify.webapi.android.SpotifyService;
+import kaaes.spotify.webapi.android.models.Pager;
+import kaaes.spotify.webapi.android.models.PlaylistTrack;
+import kaaes.spotify.webapi.android.models.Track;
+import retrofit.client.Response;
+
 /*
  * Mike, 05-MAY-2017
  * This base activity provides the navigation functionality that all other activities will inherit.
@@ -32,7 +44,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
         BottomNavigationView.OnNavigationItemSelectedListener, SpotifyPlayer.NotificationCallback,
         ConnectionStateCallback {
     protected BottomNavigationView navigationView;
+
     public static Player mPlayer;
+    public static List<Track> tracks;
     public static String token;
     public static final int REQUEST_CODE = 1337;
     public static Player.NotificationCallback notificationCallback;
@@ -236,6 +250,31 @@ public abstract class BaseActivity extends AppCompatActivity implements
             if (response.getType() == AuthenticationResponse.Type.TOKEN) {
                 BaseActivity.token = response.getAccessToken();
                 Config playerConfig = new Config(this, response.getAccessToken(), SpotifyConstants.cID);
+
+                SpotifyApi api = new SpotifyApi();
+
+                api.setAccessToken(response.getAccessToken());
+
+                SpotifyService spotify = api.getService();
+
+                spotify.getPlaylistTracks("hendemic", "4fWo8AAMu5GMnLtAhtPktC", new SpotifyCallback<Pager<PlaylistTrack>>() {
+                    @Override
+                    public void failure(SpotifyError spotifyError) {
+
+
+                    }
+
+                    @Override
+                    public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
+                       tracks = new ArrayList<Track>();
+                        for (PlaylistTrack playlistTrack : playlistTrackPager.items) {
+                            tracks.add(playlistTrack.track);
+                            Log.d("Tracks", playlistTrack.track.name);
+                        }
+                        //tracks.add(playlistTrackPager.items.get(0).track);
+
+                    }
+                });
                 Spotify.getPlayer(playerConfig, this, new SpotifyPlayer.InitializationObserver() {
                     @Override
                     public void onInitialized(SpotifyPlayer spotifyPlayer) {

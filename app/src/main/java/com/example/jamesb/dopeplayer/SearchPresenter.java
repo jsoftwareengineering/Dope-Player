@@ -123,7 +123,7 @@ public class SearchPresenter implements Search.ActionListener {
     @Override
     public void loadMoreResults() {
         Log.d(TAG, "Load more...");
-        mSearchPager.getNextPage(mSearchListener);
+        //mSearchPager.getNextPage(mSearchListener);
     }
 
     @Override
