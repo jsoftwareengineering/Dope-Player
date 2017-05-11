@@ -59,6 +59,7 @@ public class TraditionalActivity extends BaseActivity implements
             notificationCallback = TraditionalActivity.this;
             BaseActivity.mPlayer.addNotificationCallback(notificationCallback);
             time.post(mUpdateTime);
+            setTrackNumber();
         }
     }
 
@@ -215,6 +216,10 @@ public class TraditionalActivity extends BaseActivity implements
                 Log.d("TraditionalActivity", "Playback event received: kSpPlaybackNotifyPlay");
                 setUpControls();
                 time.post(mUpdateTime);
+            }
+            break;
+            case kSpPlaybackNotifyTrackChanged: {
+                setTrackNumber();
             }
             break;
             default:
