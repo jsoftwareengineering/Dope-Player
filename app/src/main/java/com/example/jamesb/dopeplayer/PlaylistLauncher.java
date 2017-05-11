@@ -35,6 +35,7 @@ public class PlaylistLauncher extends BaseActivity implements
     private Button playTestButton;
     private Button logoutTestButton;
     private RecordSlider slider;
+    public static int index;
 
     private Search.ActionListener mActionListener;
 
@@ -42,6 +43,10 @@ public class PlaylistLauncher extends BaseActivity implements
     private PlaylistLauncher.ScrollListener mScrollListener = new PlaylistLauncher.ScrollListener(mLayoutManager);
     private SearchResultsAdapter mAdapter;
 
+    public void setIndex(int index){
+        this.index =index;
+
+    }
     private class ScrollListener extends ResultListScrollListener {
 
         public ScrollListener(LinearLayoutManager layoutManager) {
@@ -68,7 +73,9 @@ public class PlaylistLauncher extends BaseActivity implements
             @Override
             public void onItemSelected(View itemView, Track item) {
                 mActionListener.selectTrack(item);
-                BaseActivity.mPlayer.playUri(null, item.uri, 0, 0);
+                Log.d("Index",String.valueOf(index));
+
+                BaseActivity.mPlayer.playUri(null, "spotify:user:hendemic:playlist:4fWo8AAMu5GMnLtAhtPktC", index, 0);
             }
         });
 

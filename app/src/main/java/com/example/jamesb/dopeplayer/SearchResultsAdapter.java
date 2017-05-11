@@ -16,6 +16,7 @@ import java.util.List;
 
 import kaaes.spotify.webapi.android.models.ArtistSimple;
 import kaaes.spotify.webapi.android.models.Image;
+import kaaes.spotify.webapi.android.models.Playlist;
 import kaaes.spotify.webapi.android.models.Track;
 
 public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdapter.ViewHolder> {
@@ -41,6 +42,8 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdap
         @Override
         public void onClick(View v) {
             notifyItemChanged(getLayoutPosition());
+            PlaylistLauncher playlistLauncher = new PlaylistLauncher();
+            playlistLauncher.setIndex(getLayoutPosition());
             mListener.onItemSelected(v, mItems.get(getAdapterPosition()));
         }
     }
