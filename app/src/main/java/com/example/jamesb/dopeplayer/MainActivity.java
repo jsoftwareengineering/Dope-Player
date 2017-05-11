@@ -273,7 +273,7 @@ public class MainActivity extends BaseActivity implements
                         Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
                         0.5f);
                 a.setRepeatCount(-1);
-                a.setDuration(10);
+                a.setDuration(0);
                 recordImageView.startAnimation(a);
 
                 //this math makes it 20 seconds per full rotation
