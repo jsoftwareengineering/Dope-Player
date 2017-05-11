@@ -58,6 +58,7 @@ public class TraditionalActivity extends BaseActivity implements
             mPlayer.removeNotificationCallback(notificationCallback);
             notificationCallback = TraditionalActivity.this;
             BaseActivity.mPlayer.addNotificationCallback(notificationCallback);
+            time.post(mUpdateTime);
         }
     }
 
@@ -206,12 +207,14 @@ public class TraditionalActivity extends BaseActivity implements
             case kSpPlaybackNotifyPause: {
                 setPlayButton();
                 Log.d("TraditionalActivity", "Playback event received: kSpPlaybackNotifyPause");
+                time.post(mUpdateTime);
             }
             break;
             case kSpPlaybackNotifyPlay: {
                 setPauseButton();
                 Log.d("TraditionalActivity", "Playback event received: kSpPlaybackNotifyPlay");
                 setUpControls();
+                time.post(mUpdateTime);
             }
             break;
             default:

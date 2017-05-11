@@ -72,6 +72,7 @@ public class MainActivity extends BaseActivity implements
             notificationCallback = MainActivity.this;
             BaseActivity.mPlayer.addNotificationCallback(notificationCallback);
             setSongAndArtist();
+            time.post(mUpdateTime);
         }
 
         recordSetup();
@@ -96,6 +97,16 @@ public class MainActivity extends BaseActivity implements
                 setSongAndArtist();
                 recordImageView.setImageDrawable(recordGif);
             }
+            case kSpPlaybackNotifyPause: {
+                Log.d("MainActivity", "Playback event received: kSpPlaybackNotifyPause");
+                time.post(mUpdateTime);
+            }
+            break;
+            case kSpPlaybackNotifyPlay: {
+                Log.d("MainActivity", "Playback event received: kSpPlaybackNotifyPlay");
+                time.post(mUpdateTime);
+            }
+            break;
             default:
                 break;
         }
@@ -163,30 +174,34 @@ public class MainActivity extends BaseActivity implements
                                 count++;
                                 Log.d("touch", "center touch " + count);
                                 touchedRecord = false;
-                                if (mPlayer.getPlaybackState().isPlaying) {
-                                    mPlayer.pause(new Player.OperationCallback() {
-                                        @Override
-                                        public void onSuccess() {
-                                            recordImageView.setImageDrawable(recordImage);
-                                        }
-
-                                        @Override
-                                        public void onError(Error error) {
-
-                                        }
-                                    });
+                                if(mPlayer == null) {
+                                    spotifyLogin();
                                 } else {
-                                    mPlayer.resume(new Player.OperationCallback() {
-                                        @Override
-                                        public void onSuccess() {
-                                            recordImageView.setImageDrawable(recordGif);
-                                        }
+                                    if (mPlayer.getPlaybackState().isPlaying) {
+                                        mPlayer.pause(new Player.OperationCallback() {
+                                            @Override
+                                            public void onSuccess() {
+                                                recordImageView.setImageDrawable(recordImage);
+                                            }
 
-                                        @Override
-                                        public void onError(Error error) {
+                                            @Override
+                                            public void onError(Error error) {
 
-                                        }
-                                    });
+                                            }
+                                        });
+                                    } else {
+                                        mPlayer.resume(new Player.OperationCallback() {
+                                            @Override
+                                            public void onSuccess() {
+                                                recordImageView.setImageDrawable(recordGif);
+                                            }
+
+                                            @Override
+                                            public void onError(Error error) {
+
+                                            }
+                                        });
+                                    }
                                 }
                             } else {
                                 recordImageView.setImageDrawable(recordImage);
