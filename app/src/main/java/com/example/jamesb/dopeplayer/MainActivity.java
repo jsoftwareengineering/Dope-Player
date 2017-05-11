@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -132,7 +133,7 @@ public class MainActivity extends BaseActivity implements
         slider = (RecordSlider) findViewById(R.id.slider);
         recordImageView = (ImageView) findViewById(R.id.gifImageViewRecord);
         touchedRecord = false;
-        recordImage = getDrawable(R.drawable.record_control);
+        recordImage = ContextCompat.getDrawable(this, R.drawable.record_control);
         angle = 0;
 
         try {
