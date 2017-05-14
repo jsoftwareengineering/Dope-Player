@@ -24,4 +24,4 @@ When touched, it checks to see if it was touched in the square highlighted below
 
 ![Touch Area](http://i.imgur.com/KuOOv1a.png)
 
-If it is touched in any other part of the record, it will begin a click and drag interaction in which the user can seek forward or backward in the song by spinning the record around. This is managed by calculating the number of degrees that the user's finger has traveled around the center of the record. When the finger is lifed, playback will resume. If the user reaches the beginning or end of the song in this way, the app will seek forward or backward in the playlist. 
+If it is touched in any other part of the record, it will begin a click and drag interaction in which the user can seek forward or backward in the song by spinning the record around. This is managed by calculating the number of degrees that the user's finger has traveled around the center of the record. When the finger is lifted, playback will resume. If the user reaches the beginning or end of the song in this way, the app will seek forward or backward in the playlist. 
