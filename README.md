@@ -5,7 +5,7 @@ Dope Player is a weekly curated playlist service with a record based interface f
 
 ## Installation
 
-To begin working with Dope Player, just open the project in [Android Studio](https://developer.android.com/studio/index.html). You will also need to register set up a spotify developer account as denoted in the [Spotify Android SDK Tutorial](https://developer.spotify.com/technologies/spotify-android-sdk/tutorial/). 
+To begin working with Dope Player, just open the project in [Android Studio](https://developer.android.com/studio/index.html). You will also need to register set up a spotify developer account as denoted in the [Spotify Android SDK Tutorial](https://developer.spotify.com/technologies/spotify-android-sdk/tutorial/). To stream Spotify audio on Android, you need a Spotify Premium account. This is true for testing and development as well.
 
 You will also need to create a java class called `SpotifyConstants.java` in the folder `/app/src/main/java/com/example/jamesb/dopeplayer/` with information from your developer account follwing this format
 ```java
